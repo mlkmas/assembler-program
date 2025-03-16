@@ -130,10 +130,15 @@ int handleMcro(char *fileName, Node **head)
             //is it a mcro call?
             if(token)
             {
-
-                if(searchMcro())
+                Node *mcro=searchMcro(*head, token);
+                if(mcro)
                 {
-                    finalFile=replaceMcro();
+                    //its a call
+                    fprintf(finalFile, "%s", mcro->value);
+                }
+                else //its a line copy it as it is
+                {
+                    fprintf(finalFile, "%s", str);
                 }
 
             }
@@ -142,4 +147,55 @@ int handleMcro(char *fileName, Node **head)
 
     }
 
+}
+int validMcroName(Node *head,const char* line)
+{
+    int i;
+    Node *current=head;
+    char lineCopy[MAX_LINE_LENGTH];
+    char *token;
+    const char *name;
+    strncpy(lineCopy, line, MAX_LINE_LENGTH);
+    lineCopy[MAX_LINE_LENGTH - 1] = '\0';
+    token = strtok(lineCopy, " \t\n");
+    if (!token || strcmp(token, "mcro") != 0)
+    {
+        return 0;
+    }
+    token = strtok(NULL, " \t\n");
+    if (!token) {
+        return 0;
+    }
+    name=token;
+    if (!name || !isalpha(name[0]))
+    {
+        return 0;
+    }
+    for( i=0;name[i];i++)
+    {
+        if(!isalnum(name[i]))
+        {
+            //error
+            return 0;
+        }
+    }
+    token = strtok(NULL, " \t\n");
+    if(token)
+    {
+        //error , there are extra letters/tokens
+        return 0;
+    }
+
+    while (current)
+    {
+        if(strcmp(current->key,name)==0)
+        {
+            //error mcro name is declared before
+            return 0;
+        }
+        current=current->next;
+    }
+/TO DO: CHECK IF THE MACRO NAME IS A RESERVED INSTRUCTION
+
+    return 1;
 }

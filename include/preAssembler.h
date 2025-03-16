@@ -10,11 +10,12 @@ int preExec(char file[]);
 */
 void processFile(const char* inputFilename, const char* outputFilename);
 int handleMcro(char *fileName, Node **head);
-int validMcroName(const char *name,Node **head);
+int validMcroName(const char *name,Node *head,const char* line);
 int addMcro(Node **head, const char *name, const char *body);
 Node *searchMcro(Node *head, const char *name);
 char *replaceMcro(Node *head, const char *line);
 void freeList(Node *head);
+int validMcroEnd(const char* endLine);
 
 
 #endif //UNTITLED6_PREASSEMBLER_H
