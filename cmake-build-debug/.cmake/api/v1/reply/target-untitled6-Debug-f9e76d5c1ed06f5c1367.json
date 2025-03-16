@@ -56,7 +56,9 @@
 			"sourceIndexes" : 
 			[
 				0,
-				3
+				3,
+				4,
+				6
 			]
 		}
 	],
@@ -94,7 +96,9 @@
 			"sourceIndexes" : 
 			[
 				0,
-				3
+				3,
+				4,
+				6
 			]
 		},
 		{
@@ -102,7 +106,10 @@
 			"sourceIndexes" : 
 			[
 				1,
-				2
+				2,
+				5,
+				7,
+				8
 			]
 		}
 	],
@@ -129,6 +136,33 @@
 			"compileGroupIndex" : 0,
 			"path" : "src/utils.c",
 			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "src/firstPass.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"path" : "include/firstPass.h",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "src/preAssembler.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"path" : "include/preAssembler.h",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "include/assembler.h",
+			"sourceGroupIndex" : 1
 		}
 	],
 	"type" : "EXECUTABLE"

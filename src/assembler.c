@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-
+#include "../include/assembler.h"
 int main(int argc, char *argv[])
 {
     char *asFile,*amFile;
@@ -8,7 +8,7 @@ int main(int argc, char *argv[])
    {
        printf("pre processing :\n");
        asFile=addFile(argv[i],".as"); //TO DO
-       if(macroExec(asFile)) //TO DO
+       if(preAssemblerExecs(asFile)) //TO DO
        {
            printf("first pass: \n");
            amFile=addFile(argv[i],".am");
