@@ -73,6 +73,12 @@ build CMakeFiles/untitled6.dir/src/preAssembler.c.obj: C_COMPILER__untitled6_Deb
   OBJECT_DIR = CMakeFiles\untitled6.dir
   OBJECT_FILE_DIR = CMakeFiles\untitled6.dir\src
 
+build CMakeFiles/untitled6.dir/instructions.c.obj: C_COMPILER__untitled6_Debug C$:/Users/malak/CLionProjects/untitled6/instructions.c || cmake_object_order_depends_target_untitled6
+  DEP_FILE = CMakeFiles\untitled6.dir\instructions.c.obj.d
+  FLAGS = -g -std=gnu90
+  OBJECT_DIR = CMakeFiles\untitled6.dir
+  OBJECT_FILE_DIR = CMakeFiles\untitled6.dir
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target untitled6
@@ -81,7 +87,7 @@ build CMakeFiles/untitled6.dir/src/preAssembler.c.obj: C_COMPILER__untitled6_Deb
 #############################################
 # Link the executable untitled6.exe
 
-build untitled6.exe: C_EXECUTABLE_LINKER__untitled6_Debug CMakeFiles/untitled6.dir/src/assembler.c.obj CMakeFiles/untitled6.dir/src/utils.c.obj CMakeFiles/untitled6.dir/src/firstPass.c.obj CMakeFiles/untitled6.dir/src/preAssembler.c.obj
+build untitled6.exe: C_EXECUTABLE_LINKER__untitled6_Debug CMakeFiles/untitled6.dir/src/assembler.c.obj CMakeFiles/untitled6.dir/src/utils.c.obj CMakeFiles/untitled6.dir/src/firstPass.c.obj CMakeFiles/untitled6.dir/src/preAssembler.c.obj CMakeFiles/untitled6.dir/instructions.c.obj
   FLAGS = -g
   LINK_LIBRARIES = -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
   OBJECT_DIR = CMakeFiles\untitled6.dir
