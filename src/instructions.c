@@ -35,3 +35,43 @@ const Instruc instructions[] = {
         {"stop",15, 0, "01"},
         {NULL,  -1, 0, NULL}
 };
+
+char *Symbols[]={".data", ".string", ".extern", ".entry"};
+int isInstructuion(char *name)
+{
+    if(name ==NULL)
+        return 0;
+    int i;
+    for(i=0;i<16;i++)
+    {
+        if(strcmp(name,instructions[i].name)==0)
+            return 1;
+    }
+    return 0;
+
+}
+
+int isReg(char *name)
+{
+    if(name ==NULL)
+        return 0;
+    int i;
+    for(i=0;i<9;i++)
+    {
+        if(strcmp(name,regTable[i].name)==0)
+            return 1;
+    }
+    return 0;
+}
+int isSymbol(char* name)
+{
+    if(name ==NULL)
+        return 0;
+    int i;
+    for(i=0;i<4;i++)
+    {
+        if(strcmp(name,Symbols[i])==0)
+            return 1;
+    }
+    return 0;
+}

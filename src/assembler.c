@@ -8,7 +8,7 @@ int main(int argc, char *argv[])
    {
        printf("pre processing :\n");
        asFile=addFile(argv[i],".as"); //TO DO
-       if(preAssemblerExecs(asFile)) //TO DO
+       if(preExec(asFile)) //TO DO
        {
            printf("first pass: \n");
            amFile=addFile(argv[i],".am");

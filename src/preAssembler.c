@@ -1,10 +1,9 @@
 #include "../include/preAssembler.h"
 #include <stdlib.h>
 #include <stdio.h>
-#include <stdarg.h>
 #include <ctype.h>
 #include <string.h>
-
+#include "../include/instructions.h"
 void processFile(const char* inputFilename, const char* outputFilename)
 {
     char line[MAX_LINE_LENGTH];
@@ -42,7 +41,7 @@ int preExec(char fileName[])
     }
     if(!handleMcro(newFileName,&head))
     {
-        freeList(*head);
+        freeList(head);
         //TO DO
         //CLOSE ALL FILES, FREE ALL MEMORY
     }
@@ -79,6 +78,11 @@ int handleMcro(char *fileName, Node **head)
         {
             mcroDef=1;
             mcroName= strtok(NULL," \t\n");
+            if (strtok(NULL, " \t\n") != NULL)
+            {
+                //error the line has extra letters
+                return 0;
+            }
             if(!validMcroName(mcroName,*head))
             {
                 freeList(*head);
@@ -103,9 +107,11 @@ int handleMcro(char *fileName, Node **head)
                     token= strtok(str," \t\n");
                     if(token && strcmp(token, "mcroend")==0)
                     {
-                        if(!validMcroEnd())//TO CHECK IF IT DOESNT HAVE A SEQUENSE LETTERS
+                        //TO CHECK IF YHE MCROEND DOESNT HAVE A SEQUENSE LETTERS
+                        if (strtok(NULL, " \t\n") != NULL)
                         {
-                            //TO DO
+                            //error the line has extra letters
+                            return 0;
                         }
                         mcroDef=1;
                         if(!addMcro(head,mcroName,macroBody))
@@ -148,25 +154,20 @@ int handleMcro(char *fileName, Node **head)
     }
 
 }
-int validMcroName(Node *head,const char* line)
+//gets a !NULL list, return the node with the same key, else returns NULL
+Node *searchMcro(Node *head, const char *name)
 {
-    int i;
-    Node *current=head;
-    char lineCopy[MAX_LINE_LENGTH];
-    char *token;
-    const char *name;
-    strncpy(lineCopy, line, MAX_LINE_LENGTH);
-    lineCopy[MAX_LINE_LENGTH - 1] = '\0';
-    token = strtok(lineCopy, " \t\n");
-    if (!token || strcmp(token, "mcro") != 0)
+    while(head!=NULL)
     {
-        return 0;
+        if(strcmp(head->key,name)==0)
+            return head;
+        head=head->next;
     }
-    token = strtok(NULL, " \t\n");
-    if (!token) {
-        return 0;
-    }
-    name=token;
+    return NULL;
+}
+int validMcroName(const char* name,Node *head)
+{
+ int i;
     if (!name || !isalpha(name[0]))
     {
         return 0;
@@ -179,12 +180,7 @@ int validMcroName(Node *head,const char* line)
             return 0;
         }
     }
-    token = strtok(NULL, " \t\n");
-    if(token)
-    {
-        //error , there are extra letters/tokens
-        return 0;
-    }
+Node *current=head;
 
     while (current)
     {
@@ -195,7 +191,37 @@ int validMcroName(Node *head,const char* line)
         }
         current=current->next;
     }
-/TO DO: CHECK IF THE MACRO NAME IS A RESERVED INSTRUCTION
+if(isInstructuion(name))
+{
+    //error its an isntruction name
+    //free+close+break
+    return 0;
+}
+if(isSymbol(name))
+{
+    //error
+    return 0;
+}
+if(isReg(name))
+{
+    //error
+    return 0;
+}
 
     return 1;
+}
+
+void freeList(Node *head)
+{
+    while(head != NULL) {
+        Node *tmp = head;
+        head = head->next;
+        freeNode(tmp);
+    }
+}
+void freeNode(Node *node)
+{
+    free(node->key);
+    free(node->value);
+    free(node);
 }

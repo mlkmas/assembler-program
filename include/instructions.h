@@ -28,5 +28,8 @@ typedef struct {
     const char *ARE;
 } Instruc;
 
+int isInstructuion(char *name);
+int isReg(char *name);
+int isSymbol(char* name);
 
 #endif //UNTITLED6_INSTRUCTIONS_H
