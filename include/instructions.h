@@ -1,7 +1,7 @@
 #ifndef UNTITLED6_INSTRUCTIONS_H
 #define UNTITLED6_INSTRUCTIONS_H
 #include <stdint.h>
-
+#include "defines.h"
 typedef struct {
     uint32_t opcode    : 6;
     uint32_t funct     : 5;
@@ -25,11 +25,12 @@ typedef struct {
     const char *name;
     short opcode;
     short numOperands;
-    const char *ARE;
+
 } Instruc;
 
 int isInstructuion(char *name);
 int isReg(char *name);
-int isSymbol(char* name);
+//4 if its entry 3 extern, 1 data 2 string 0 none
+int isDirective(char* name);
 
 #endif //UNTITLED6_INSTRUCTIONS_H

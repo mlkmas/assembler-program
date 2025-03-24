@@ -44,8 +44,9 @@ int preExec(char fileName[])
         freeList(head);
         //TO DO
         //CLOSE ALL FILES, FREE ALL MEMORY
+        return 0;
     }
-
+    return 1;
 }
 int handleMcro(char *fileName, Node **head)
 {
@@ -197,7 +198,7 @@ if(isInstructuion(name))
     //free+close+break
     return 0;
 }
-if(isSymbol(name))
+if(isDirective(name) != 0)
 {
     //error
     return 0;

@@ -16,26 +16,26 @@ const RegMap regTable[] = {
         {"psw", 8},
         {NULL, -1}
 };
-const Instruc instructions[] = {
-        {"add",  2, 2, "01"},
-        {"sub",  2, 2, "01"},
-        {"mov",  0, 2, "01"},
-        {"cmp",  1, 2, "01"},
-        {"lea",  4, 2, "01"},
-        {"clr",  5, 1, "01"},
-        {"not",  5, 1, "01"},
-        {"inc",  5, 1, "01"},
-        {"dec",  5, 1, "01"},
-        {"jmp",  9, 1, "01"},
-        {"bne", 9, 1, "01"},
-        {"jsr", 9, 1, "01"},
-        {"red", 12, 1, "01"},
-        {"prn", 13, 1, "01"},
-        {"rts", 14, 0, "01"},
-        {"stop",15, 0, "01"},
-        {NULL,  -1, 0, NULL}
+const Instruc instructions[] =
+        {
+        {"add",  2, 2},
+        {"sub",  2, 2},
+        {"mov",  0, 2},
+        {"cmp",  1, 2},
+        {"lea",  4, 2},
+        {"clr",  5, 1},
+        {"not",  5, 1},
+        {"inc",  5, 1},
+        {"dec",  5, 1},
+        {"jmp",  9, 1},
+        {"bne",  9, 1},
+        {"jsr",  9, 1},
+        {"red", 12, 1},
+        {"prn", 13, 1},
+        {"rts", 14, 0},
+        {"stop",15, 0},
+        {NULL,  -1, 0}  // Sentinel value to mark the end of the table
 };
-
 char *Symbols[]={".data", ".string", ".extern", ".entry"};
 int isInstructuion(char *name)
 {
@@ -63,7 +63,7 @@ int isReg(char *name)
     }
     return 0;
 }
-int isSymbol(char* name)
+int isDirective(char* name)
 {
     if(name ==NULL)
         return 0;
@@ -71,7 +71,7 @@ int isSymbol(char* name)
     for(i=0;i<4;i++)
     {
         if(strcmp(name,Symbols[i])==0)
-            return 1;
+            return i+1;
     }
     return 0;
 }
