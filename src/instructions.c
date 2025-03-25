@@ -14,9 +14,9 @@ const RegMap regTable[] = {
         {"r6", 6},
         {"r7", 7},
         {"psw", 8},
-        {NULL, -1}
+        {"\0", -1}
 };
-const Instruc instructions[] =
+const InstrucOp instructions[] =
         {
         {"add",  2, 2},
         {"sub",  2, 2},
@@ -36,8 +36,8 @@ const Instruc instructions[] =
         {"stop",15, 0},
         {NULL,  -1, 0}  // Sentinel value to mark the end of the table
 };
-char *Symbols[]={".data", ".string", ".extern", ".entry"};
-int isInstructuion(char *name)
+const char Symbols[]={".data", ".string", ".extern", ".entry"};
+int isInstruction(char *name)
 {
     if(name ==NULL)
         return 0;

@@ -192,7 +192,7 @@ Node *current=head;
         }
         current=current->next;
     }
-if(isInstructuion(name))
+if(isInstruction(name))
 {
     //error its an isntruction name
     //free+close+break

@@ -4,11 +4,12 @@
 #include <string.h>
 int firstPartExe(char *fileNmes)
 {
-    int IC,DC,res;
+    int IC,DC,res,L;
     FILE *fp;
     char line[MAX_LINE_LENGTH],str[MAX_LINE_LENGTH],symbol[MAX_LINE_LENGTH];
 IC=100;
 DC=0;
+Instruction instruction;
     while (fgets(line, MAX_LINE_LENGTH, fp) != NULL) {
         if (strcmp(line, "\n") == 0) {
             continue;
@@ -17,6 +18,11 @@ DC=0;
         {
             strcpy(str, line);
             res= isDirective(str);
+            switch (res)
+            {
+                case "expression":
+                
+            }
             if(res==1 ||res==2) /*is it a data or string*/
             {
                 //TO DO: CHECKS IF THE DATA/STR HAS A STMBOL DEF IF YES AND LEGAL ADD IT TO THE SYMBOL TABLE
@@ -34,7 +40,7 @@ DC=0;
 
             } else{ //its a normal instructuin
                 //TO DO: EXTRACT SYMBOL RETURNS THE SYMBOL NAME IF FOUND ELSE NULL
-                symbol=extractSymbol(line)
+                symbol=extractSymbol(line);
                 if(symbol!=NULL )
                 {
                     if(validSymbol())
@@ -48,6 +54,27 @@ DC=0;
                 }
                 else
                 {
+                    //TO DO: THOS WILL FILL THE INSTRUCTION DETAILS
+                    if(parseInstruction(line, &instruction)==0)
+                    {
+                        //the instruction has something illegal
+                        continue;
+
+                    }
+                    else
+                    {
+                        L=1;
+                        for (int i = 0; i < instruction.num_operands; i++)
+                        {
+                            if (instruction.operands[i].mode != OP_REGISTER)
+                                L++;
+                        }
+
+
+
+
+
+                    }
 
                 }
 
