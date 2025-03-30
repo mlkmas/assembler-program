@@ -2,14 +2,24 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include "../include/instructions.h"
+#include "../include/tables.h"
 int firstPartExe(char *fileNmes)
 {
-    int IC, DC, res, L,i;
+    int IC, DC, res, L,i, symbolCount = 0;
+    Symbol symbolTable[MAX_SYMBOLS], symbol;//TO DO:CHECK IF THERE IS  A MAX SYMBOLS VALUE, IF NOT ALLOCATE DYNAMICALLY
+
     FILE *fp;
     char line[MAX_LINE_LENGTH], str[MAX_LINE_LENGTH], symbol[MAX_LINE_LENGTH];
     IC = 100;
     DC = 0;
     Instruction instruction;
+    fp= fopen(fileNmes,"r");
+    if(fp==NULL)
+    {
+        //throw error
+        return -1;
+    }
     while (fgets(line, MAX_LINE_LENGTH, fp) != NULL) {
         if (strcmp(line, "\n") == 0) {
             continue;
@@ -46,20 +56,25 @@ int firstPartExe(char *fileNmes)
                     //its a normal instructuin
                     //TO DO: EXTRACT SYMBOL RETURNS THE SYMBOL NAME IF FOUND ELSE NULL
                     symbol = extractSymbol(line);
-                    if (symbol != NULL) {
-                        if (validSymbol()) {
+                    if (symbol != NULL)
+                    {
+                        if (validSymbol(symbol))
+                        {
                             //if the instruction has a symbol insert it as code
                             insertSymbol();//TO DO
-                        } else {
+                        } else
+                        {
                             //TO DO:   not a valid symbol throw error
                         }
                     } else {
                         //TO DO: THOS WILL FILL THE INSTRUCTION DETAILS
-                        if (parseInstruction(line, &instruction) == 0) {
+                        if (parseInstruction(line, &instruction) == 0)
+                        {
                             //the instruction has something illegal
                             continue;
 
-                        } else {
+                        } else
+                        {
                             L = 1;
                             for (i = 0; i < instruction.num_operands; i++) {
                                 if (instruction.operands[i].mode != OP_REGISTER)
@@ -75,4 +90,5 @@ int firstPartExe(char *fileNmes)
 
         }
     }
+    fclose(fp);
 }

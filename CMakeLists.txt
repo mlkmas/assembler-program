@@ -3,4 +3,4 @@ project(untitled6 C)
 
 set(CMAKE_C_STANDARD 90)
 
-add_executable(untitled6 src/assembler.c include/defines.h include/utils.h src/utils.c src/firstPass.c include/firstPass.h src/preAssembler.c include/preAssembler.h include/assembler.h src/instructions.c include/instructions.h)
+add_executable(untitled6 src/assembler.c include/defines.h include/utils.h src/utils.c src/firstPass.c include/firstPass.h src/preAssembler.c include/preAssembler.h include/assembler.h src/instructions.c include/instructions.h src/codeConversion.c include/codeConversion.h src/tables.c include/tables.h src/errors.c include/errors.h)
