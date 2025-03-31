@@ -134,20 +134,54 @@ int handleMcro(char *fileName, Node **head)
         }
         else //its not a mcro definition
         {
-            //is it a mcro call?
-            if(token)
+            //is it an entry who has a macro name?
+            if (token && strcmp(token, ".entry") == 0)
             {
-                Node *mcro=searchMcro(*head, token);
-                if(mcro)
+                // Check if the token following .entry is a macro name
+                char *entryName = strtok(NULL, " \t\n");
+                if (entryName && searchMcro(*head, entryName))
                 {
-                    //its a call
-                    fprintf(finalFile, "%s", mcro->value);
+                    // Error: .entry references a macro name
+                    printf("Error: Line %d: .entry directive references a macro name '%s'\n", lineCounter, entryName);
+                    fclose(fp);
+                    fclose(finalFile);
+                    return 0;
                 }
-                else //its a line copy it as it is
-                {
-                    fprintf(finalFile, "%s", str);
-                }
+                fprintf(finalFile, "%s %s\n", token, entryName);
+            }
+            //is it a mcro call?
+            else if(token) {
+                //first check if this a symbol
+                // Check if the token ends with ':'
+                size_t len = strlen(token);
+                if (len > 0 && token[len - 1] == ':') {
+                    // It's a label or symbol, strip the ':' to get the symbol name
+                    token[len - 1] = '\0'; // Remove the colon
 
+                    // Check if the symbol name is a macro name
+                    if (searchMcro(*head, token)) {
+                        // Error: Symbol name matches a macro name
+                        printf("Error: Line %d: Symbol '%s' cannot have the same name as a macro\n", lineCounter,
+                               token);
+                        fclose(fp);
+                        fclose(finalFile);
+                        //TO DO : I NEED TO CONTINUE LOOKING FOR ERRORS THEN STOP
+                        return 0;
+                    }
+
+                    // Write the label line to the output file
+                    fprintf(finalFile, "%s:\n", token); // Add the colon back for output
+                } else {
+                    // Check if it's a macro call
+                    Node *mcro = searchMcro(*head, token);
+                    if (mcro) {
+                        // It's a macro call
+                        fprintf(finalFile, "%s", mcro->value);
+                    } else {
+                        // It's a regular line, copy it as-is
+                        fprintf(finalFile, "%s", str);
+                    }
+                }
             }
 
         }

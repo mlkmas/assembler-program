@@ -39,8 +39,8 @@ int validSymbol(Symbol *symbol, Symbol symbolTable[], int symbolCount)
             return 0; // Symbol already exists
         }
     }
-    //TO DO IS MACRO CHECKS IF THE SYMBOL IS AN EXISTING MACRO NAME+ EDIT THE PREASSEMBLER TO SAVE MACRO NAMES
-    if(isInstruction(symbol->name)==1 || isMacro(symbol->name)==1)
+
+    if(isInstruction(symbol->name)==1 )
     {
         //its not a valis name TO DO ERROR
         return 0;
