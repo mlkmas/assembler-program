@@ -6,13 +6,13 @@
 #include "../include/tables.h"
 #include "../include/instructions.h"
 #include "../include/preAssembler.h"
-void insertSymbol(Symbol symbolTable[], char *name, int value, int isExtern,int isEntry, int type, int symbolCount) // ones digit is for entr, tens for ectern
+void insertSymbol(Symbol **symbolTable, char *name, int value, int isExtern,int isEntry, int type, int *symbolCount) // ones digit is for entr, tens for ectern
 {
-    strcpy(symbolTable[symbolCount].name, name);
-    symbolTable[symbolCount].value = value;
-    symbolTable[symbolCount].isEntry = isEntry ;
-    symbolTable[symbolCount].isExternal = isExtern;
-    symbolTable[symbolCount].type = type;
+    strcpy(symbolTable[*symbolCount]->name, name);
+    (*symbolTable)[*symbolCount].value = value;
+    (*symbolTable)[*symbolCount].isEntry = isEntry ;
+    (*symbolTable)[*symbolCount].isExternal = isExtern;
+    (*symbolTable)[*symbolCount].type = type;
     symbolCount++;
 }
 

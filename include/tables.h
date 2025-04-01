@@ -12,5 +12,10 @@ typedef struct
 } Symbol;
 
 
-void insertSymbol(Symbol symbolTable[], char *name, int value, int isExtern,int isEntry, int type, int symbolCount);
+void insertSymbol(Symbol **symbolTable, char *name, int value, int isExtern,int isEntry, int type, int *symbolCount);
+
+
+
+
+
 #endif //UNTITLED6_TABLES_H

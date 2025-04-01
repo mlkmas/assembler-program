@@ -9,6 +9,15 @@ typedef struct
     short value;        // Corresponding value (e.g., 0 for r0)
 } RegMap;
 
+typedef struct directives
+{
+    char *symbol;
+    short *nums;
+    int len;
+    char *arg_label;
+    int isExtern;
+} directives;
+
 typedef struct {
     const char *name;
     short opcode;
@@ -60,6 +69,25 @@ typedef struct
     uint32_t R :1;
     uint32_t E :1;
 } MachineWord;
+/* Structure to represent a location in the file */
+typedef struct {
+    char *file_name;     // Name of the file
+    int line_num;        // Line number in the file
+} location;
+
+/* Structure to represent code or data */
+typedef struct
+{
+    char *label;
+    int address;         // Address line in memory
+    int value;           // Value of the code/data
+} codeConv;
+
+/* Structure to represent other tables (e.g., externs, entries) */
+typedef struct {
+    char name[MAX_LINE_LENGTH];  // Name of the label
+    int address;                 // Address of the label
+} otherTable;
 
 
 

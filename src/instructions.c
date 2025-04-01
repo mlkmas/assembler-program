@@ -36,7 +36,7 @@ const InstrucOp instructions[] =
         {"stop",15, 0},
         {NULL,  -1, 0}  // Sentinel value to mark the end of the table
 };
-const char Symbols[]={".data", ".string", ".extern", ".entry"};
+const char directive[]={".data", ".string", ".extern", ".entry"};
 int isInstruction(char *name)
 {
     if(name ==NULL)
@@ -70,7 +70,7 @@ int isDirective(char* name)
     int i;
     for(i=0;i<4;i++)
     {
-        if(strcmp(name,Symbols[i])==0)
+        if(strcmp(name,directive[i])==0)
             return i+1;
     }
     return 0;

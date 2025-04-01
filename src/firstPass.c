@@ -2,15 +2,15 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "../include/instructions.h"
+
 #include "../include/tables.h"
 int firstPartExe(char *fileNmes)
 {
-    int IC, DC, res, L,i, symbolCount = 0;
-    Symbol symbolTable[MAX_SYMBOLS], symbol;//TO DO:CHECK IF THERE IS  A MAX SYMBOLS VALUE, IF NOT ALLOCATE DYNAMICALLY
-
+    int IC, DC, res, L,i, symbolCount = 0,symTableSize=10,errFlag=0,errCode=-1;
+    Symbol *symbolTable= malloc(symTableSize * sizeof(Symbol)), symbol;
+    directives *directiveInst;
     FILE *fp;
-    char line[MAX_LINE_LENGTH], str[MAX_LINE_LENGTH], symbol[MAX_LINE_LENGTH];
+    char line[MAX_LINE_LENGTH], str[MAX_LINE_LENGTH];
     IC = 100;
     DC = 0;
     Instruction instruction;
@@ -34,7 +34,7 @@ int firstPartExe(char *fileNmes)
                 case 2:
                 {
                     //TO DO: CHECKS IF THE DATA/STR HAS A STMBOL DEF IF YES AND LEGAL ADD IT TO THE SYMBOL TABLE
-                    processDataOrStr();
+                    directiveInst= processDataOrStr(str,&errCode);
                     break;
                 }
                 case 4:
@@ -91,4 +91,22 @@ int firstPartExe(char *fileNmes)
         }
     }
     fclose(fp);
+}
+
+
+directives* processDataOrStr(char *str, int *errCode)
+{
+directives *d;
+    d= malloc( sizeof (directives));
+    if(d==NULL)
+    {
+        //error
+        return NULL;
+    }
+    //TO DO
+    //IM THINKING OF HANDELING ALL OF THE DIRECTIVES HER(DATA STR EXTERN ENTRY) BY ADDING A FIELD TO TYPE THEN IN THE FIRST PATH EXEC KUST CHECK THE DIR TYPE AND INSERT IN TABLES ACCORDINGLY
+
+
+    return d;
+
 }
