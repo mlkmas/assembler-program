@@ -6,7 +6,7 @@
 #include "../include/tables.h"
 int firstPartExe(char *fileNmes)
 {
-    int IC, DC, res, L,i, symbolCount = 0,dirCount=0,errFlag=0,errCode=-1,symbolFlag=-1,externsCounter=0,intrucsCounter=0;
+    int IC, DC, res, L,i, symbolCount = 0,dirCount=0,errFlag=0,err=-1,symbolFlag=-1,externsCounter=0,intrucsCounter=0;
     size_t symTableCap=10, dirCapacity=10,instCapactiy=10;
     Symbol *symbolTable= malloc(symTableCap * sizeof(Symbol)), symbol;
     Directive *directives= malloc(dirCapacity * sizeof(Directive)),directiveInst;
@@ -48,15 +48,15 @@ int firstPartExe(char *fileNmes)
                 case 1:
                 case 2:
                 {
-                    processDataOrStr(res,&directiveInst,&errCode);
-                    insertDir(&directiveInst,&directives,&errCode,&dirCapacity,&dirCount);
+                    processDataOrStr(res,&directiveInst,line,&err);
+                    insertDir(&directiveInst, &directives, &err, &dirCapacity, &dirCount);
                     if(symbolFlag==1)
                     {
                         insertSymbol(&symbolTable,&symbol,&symbolCount,&symTableCap,DC);
 
                         symbolFlag=0;
                     }
-                    //CHECK ID I ADDED +1 IN LEN FOR STRING
+                    //CHECK IF I ADDED +1 IN LEN FOR STRING
                     DC+=directiveInst.len;
                     break;
                 }

@@ -4,7 +4,7 @@
 
 typedef struct
 {
-    char *name;           // Dynamically allocated
+    char name[32];
     int value;            // Address (IC or DC)
     int lineNum;         // Source line for error reporting
     unsigned isEntry : 1; //1 entry 0 not
@@ -21,9 +21,11 @@ typedef struct
 void extractSymbol(char *line, Symbol *symbol,int isData);//TO DO
 int validSymbol(Symbol *symbol, Symbol symbolTable[], int symbolCount);
 void insertSymbol(Symbol **symbolTable, Symbol *symbol, int *symbolCount,size_t *symbolSize,int DC);
-
 int resizeTable(void **table, size_t newSize, size_t elemCounter);
-
+void processDataOrStr(int res,Directive *directiveInst,char *line,int *err);
+int extractNums(char *lineCopy, Directive *dir,int *err);
+int countNums(const char *line);
+int extractStr(char *lineCopy, Directive *dir,int *err);
 
 
 #endif //UNTITLED6_TABLES_H

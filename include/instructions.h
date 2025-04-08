@@ -11,10 +11,11 @@ typedef struct
 
 typedef struct
 {
-    char *symbol; //in case its associated with a symbol /TO DO DO I NEED IT? IF YES SHOULD CHNGE TO A SYMBOL PTR?
-    short *nums;//for .data
-    char *string;//for .string
-    short len;
+    char symbol[32]; //in case its associated with a symbol /TO DO: DO I NEED IT? IF YES SHOULD CHNGE TO A SYMBOL PTR?
+    int *nums;//for .data
+    char *str;//for .string
+    int len;
+    int isData;//1 if its data, 0= string
 
 } Directive;
 
