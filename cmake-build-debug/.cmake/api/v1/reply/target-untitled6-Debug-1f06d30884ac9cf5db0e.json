@@ -195,7 +195,7 @@
 		},
 		{
 			"backtrace" : 1,
-			"path" : "src/codeConversion.h",
+			"path" : "include/codeConversion.h",
 			"sourceGroupIndex" : 1
 		},
 		{
@@ -206,7 +206,7 @@
 		},
 		{
 			"backtrace" : 1,
-			"path" : "src/tables.h",
+			"path" : "include/tables.h",
 			"sourceGroupIndex" : 1
 		},
 		{
@@ -217,7 +217,7 @@
 		},
 		{
 			"backtrace" : 1,
-			"path" : "src/errors.h",
+			"path" : "include/errors.h",
 			"sourceGroupIndex" : 1
 		}
 	],

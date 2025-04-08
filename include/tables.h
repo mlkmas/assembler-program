@@ -1,20 +1,28 @@
 #ifndef UNTITLED6_TABLES_H
 #define UNTITLED6_TABLES_H
-#include "defines.h"
+#include "instructions.h"
 
 typedef struct
 {
-    char name[MAX_LINE_LENGTH];  //max label length
-    int value;                   // Address value
-    int isEntry : 1;       // Uses 1 bit (0 or 1)
-    int isExternal : 1;    // Uses 1 bit (0 or 1)
-    int type : 2;           // 2 bits for 4 possible types (00=none, 01=data, 10=string, 11=code)
+    char *name;           // Dynamically allocated
+    int value;            // Address (IC or DC)
+    int lineNum;         // Source line for error reporting
+    unsigned isEntry : 1; //1 entry 0 not
+    unsigned isExternal : 1; //1=extern
+    unsigned isData : 1; // 1=.data/.string, 0=instruction
 } Symbol;
 
+typedef struct
+{
+    char *fileName; //file name
+    int lineNum;//line nums error
+} SourcePosition; //for tracking lines and its file
 
-void insertSymbol(Symbol **symbolTable, char *name, int value, int isExtern,int isEntry, int type, int *symbolCount);
+void extractSymbol(char *line, Symbol *symbol,int isData);//TO DO
+int validSymbol(Symbol *symbol, Symbol symbolTable[], int symbolCount);
+void insertSymbol(Symbol **symbolTable, Symbol *symbol, int *symbolCount,size_t *symbolSize,int DC);
 
-
+int resizeTable(void **table, size_t newSize, size_t elemCounter);
 
 
 

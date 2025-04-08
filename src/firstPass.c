@@ -6,11 +6,13 @@
 #include "../include/tables.h"
 int firstPartExe(char *fileNmes)
 {
-    int IC, DC, res, L,i, symbolCount = 0,symTableSize=10,errFlag=0,errCode=-1;
-    Symbol *symbolTable= malloc(symTableSize * sizeof(Symbol)), symbol;
-    directives *directiveInst;
+    int IC, DC, res, L,i, symbolCount = 0,dirCount=0,errFlag=0,errCode=-1,symbolFlag=-1,externsCounter=0,intrucsCounter=0;
+    size_t symTableCap=10, dirCapacity=10,instCapactiy=10;
+    Symbol *symbolTable= malloc(symTableCap * sizeof(Symbol)), symbol;
+    Directive *directives= malloc(dirCapacity * sizeof(Directive)),directiveInst;
+    Instruction *instrucs= malloc(instCapactiy * sizeof(Instruction));
     FILE *fp;
-    char line[MAX_LINE_LENGTH], str[MAX_LINE_LENGTH];
+    char line[MAX_LINE_LENGTH], *str,*pos;
     IC = 100;
     DC = 0;
     Instruction instruction;
@@ -24,17 +26,38 @@ int firstPartExe(char *fileNmes)
         if (strcmp(line, "\n") == 0) {
             continue;
         }
-        if (strchr(line, '.'))
+        pos= strchr(line, '.');
+        if(pos)
         {
-            strcpy(str, line);
+            sscanf(pos, "%s", str);
             res = isDirective(str);
+            extractSymbol(line,&symbol,res);
+            //TO DO:CHECK IF I NEED TO RESET SYMBOL EVERY TIME
+            if (symbol.name[0] == '\0' != 0 )
+            {
+                if(!validSymbol(&symbol,symbolTable,symbolCount))
+                {
+                    //TO DO:   not a valid symbol throw error
+                } else
+                {
+                    symbolFlag=1;
+                }
+            }
             switch (res)
             {
                 case 1:
                 case 2:
                 {
-                    //TO DO: CHECKS IF THE DATA/STR HAS A STMBOL DEF IF YES AND LEGAL ADD IT TO THE SYMBOL TABLE
-                    directiveInst= processDataOrStr(str,&errCode);
+                    processDataOrStr(res,&directiveInst,&errCode);
+                    insertDir(&directiveInst,&directives,&errCode,&dirCapacity,&dirCount);
+                    if(symbolFlag==1)
+                    {
+                        insertSymbol(&symbolTable,&symbol,&symbolCount,&symTableCap,DC);
+
+                        symbolFlag=0;
+                    }
+                    //CHECK ID I ADDED +1 IN LEN FOR STRING
+                    DC+=directiveInst.len;
                     break;
                 }
                 case 4:
@@ -42,47 +65,43 @@ int firstPartExe(char *fileNmes)
                     //its entry, will be handeled in second pass so just skip to the next line
                     continue;
                     break;
-
                 }
                 case 3:
                 {
                     //  its extern
                     //TO DO
-                    processExternOrEntry();
+                    if(symbolFlag==1)
+                    {
+                        insertSymbol(&symbolTable,&symbol,&symbolCount,&symTableCap,0);
+                        externsCounter++;
+                        symbolFlag=0;
+                    }
                     break;
                 }
                 default:
                 {
                     //its a normal instructuin
-                    //TO DO: EXTRACT SYMBOL RETURNS THE SYMBOL NAME IF FOUND ELSE NULL
-                    symbol = extractSymbol(line);
-                    if (symbol != NULL)
+                    if(symbolFlag==1)
                     {
-                        if (validSymbol(symbol))
-                        {
-                            //if the instruction has a symbol insert it as code
-                            insertSymbol();//TO DO
-                        } else
-                        {
-                            //TO DO:   not a valid symbol throw error
-                        }
-                    } else {
-                        //TO DO: THOS WILL FILL THE INSTRUCTION DETAILS
-                        if (parseInstruction(line, &instruction) == 0)
+                        insertSymbol(&symbolTable,&symbol,&symbolCount,&symTableCap,IC);
+                        symbolFlag=0;
+                    }
+                        //TO DO: THIS WILL FILL THE INSTRUCTION DETAILS
+                        if (parseInstruction(line, &instruction,IC) == 0)
                         {
                             //the instruction has something illegal
+                            //ERROR
                             continue;
 
                         } else
                         {
-                            L = 1;
-                            for (i = 0; i < instruction.num_operands; i++) {
-                                if (instruction.operands[i].mode != OP_REGISTER)
-                                    L++;
-                            }
+                            insertInstruction(&instruction,&instrucs,&instCapactiy,&intrucsCounter)
+                            L = instruction.wordCount;
+                            buildFirstWord()
+                            IC+=L;
                         }
 
-                    }
+
 
                 }
             }
@@ -94,10 +113,10 @@ int firstPartExe(char *fileNmes)
 }
 
 
-directives* processDataOrStr(char *str, int *errCode)
+Directive* processDataOrStr(char *str, int *errCode)
 {
-directives *d;
-    d= malloc( sizeof (directives));
+Directive *d;
+    d= malloc( sizeof (Directive));
     if(d==NULL)
     {
         //error

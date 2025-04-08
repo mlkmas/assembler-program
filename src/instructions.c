@@ -63,7 +63,7 @@ int isReg(char *name)
     }
     return 0;
 }
-int isDirective(char* name)
+int isDirective(const char* name)
 {
     if(name ==NULL)
         return 0;

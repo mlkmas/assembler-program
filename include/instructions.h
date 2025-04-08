@@ -5,58 +5,41 @@
 
 typedef struct
 {
-    const char name[10]; // Register name (e.g., "r0")
+    const char name[5]; // Register name (e.g., "r0")
     short value;        // Corresponding value (e.g., 0 for r0)
 } RegMap;
 
-typedef struct directives
+typedef struct
 {
-    char *symbol;
-    short *nums;
-    int len;
-    char *arg_label;
-    int isExtern;
-} directives;
+    char *symbol; //in case its associated with a symbol /TO DO DO I NEED IT? IF YES SHOULD CHNGE TO A SYMBOL PTR?
+    short *nums;//for .data
+    char *string;//for .string
+    short len;
+
+} Directive;
 
 typedef struct {
     const char *name;
     short opcode;
     short numOperands;
+    short funct;
 
 } InstrucOp;
-typedef enum {
-    OP_REGISTER,   // r0-r7
-    OP_IMMEDIATE,  // #5
-    OP_LABEL       // LOOP or &LOOP
-} OperandType;
 
 typedef enum {
+    OP_REGISTER,   // r0-r7
     MODE_DIRECT,     // LOOP (label)
     MODE_IMMEDIATE,  // #5
     MODE_RELATIVE    // &LOOP
 } AddressingMode;
 
-typedef struct
-{
-    OperandType type;    // REGISTER/IMMEDIATE/LABEL
-    AddressingMode mode; // Only used if type=LABEL
-    union
-    {
-        short reg;     // For registers (0-7)
-        int imm;   // For immediates (#-5)
-        char label[MAX_LINE_LENGTH];  // For labels ("LOOP")
-    };
+typedef struct {
+    AddressingMode mode;
+      short reg;     // For registers (0-7)
+      int imm;   // For immediates (#-5)
+     short labelAddress; //
+
 } Operand;
-
-typedef struct
-{
-    char name[8];        // "mov", "add" etc.
-    short opcode;
-    short funct;
-    short num_operands;
-    Operand operands[MAX_OPERANDS];
-} Instruction;
-
 typedef struct
 {
     uint32_t opcode :6;
@@ -69,21 +52,24 @@ typedef struct
     uint32_t R :1;
     uint32_t E :1;
 } MachineWord;
-/* Structure to represent a location in the file */
+
 typedef struct {
-    char *file_name;     // Name of the file
-    int line_num;        // Line number in the file
-} location;
+    InstrucOp inst;
+    short address;//inst address
+    Operand operands[MAX_OPERANDS];
+    int wordCount;
+    MachineWord words[3];
+} Instruction;
+
 
 /* Structure to represent code or data */
 typedef struct
 {
-    char *label;
     int address;         // Address line in memory
-    int value;           // Value of the code/data
+    uint32_t mw;           // machine word
 } codeConv;
 
-/* Structure to represent other tables (e.g., externs, entries) */
+/* Structure to represent other tables ( externs, entries) */
 typedef struct {
     char name[MAX_LINE_LENGTH];  // Name of the label
     int address;                 // Address of the label
@@ -95,6 +81,6 @@ typedef struct {
 int isInstruction(char *name);
 int isReg(char *name);
 //4 if its entry 3 extern, 1 data 2 string 0 none
-int isDirective(char* name);
+int isDirective(const char* name);
 
 #endif //UNTITLED6_INSTRUCTIONS_H
