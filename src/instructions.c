@@ -54,14 +54,14 @@ int isInstruction(char *name)
 int isReg(char *name)
 {
     if(name ==NULL)
-        return 0;
+        return -1;
     int i;
-    for(i=0;i<9;i++)
+    for(i=0;i<10;i++)
     {
         if(strcmp(name,regTable[i].name)==0)
-            return 1;
+            return regTable[i].value;
     }
-    return 0;
+    return -1;
 }
 int isDirective(const char* name)
 {

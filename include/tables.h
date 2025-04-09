@@ -26,6 +26,6 @@ void processDataOrStr(int res,Directive *directiveInst,char *line,int *err);
 int extractNums(char *lineCopy, Directive *dir,int *err);
 int countNums(const char *line);
 int extractStr(char *lineCopy, Directive *dir,int *err);
-
+void insertDir(Directive *directiveInst,Directive **directives, int *err, size_t *dirCapacity,int *dirCount);
 
 #endif //UNTITLED6_TABLES_H

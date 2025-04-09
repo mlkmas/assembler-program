@@ -63,7 +63,6 @@ int firstPartExe(char *fileNmes)
                 case 4:
                 {
                     //its entry, will be handeled in second pass so just skip to the next line
-                    continue;
                     break;
                 }
                 case 3:
@@ -80,14 +79,9 @@ int firstPartExe(char *fileNmes)
                 }
                 default:
                 {
-                    //its a normal instructuin
-                    if(symbolFlag==1)
-                    {
-                        insertSymbol(&symbolTable,&symbol,&symbolCount,&symTableCap,IC);
-                        symbolFlag=0;
-                    }
+
                         //TO DO: THIS WILL FILL THE INSTRUCTION DETAILS
-                        if (parseInstruction(line, &instruction,IC) == 0)
+                        if (parseInstruction(line, &instruction,IC,&err,&symbolFlag) == 0)
                         {
                             //the instruction has something illegal
                             //ERROR
@@ -95,11 +89,17 @@ int firstPartExe(char *fileNmes)
 
                         } else
                         {
-                            insertInstruction(&instruction,&instrucs,&instCapactiy,&intrucsCounter)
+                            insertInstruction(&instruction,&instrucs,&instCapactiy,&intrucsCounter);
                             L = instruction.wordCount;
-                            buildFirstWord()
+                            buildFirstWord();
                             IC+=L;
                         }
+                    //its a normal instructuin
+                    if(symbolFlag==1)
+                    {
+                        insertSymbol(&symbolTable,&symbol,&symbolCount,&symTableCap,IC);
+                        symbolFlag=0;
+                    }
 
 
 
@@ -113,19 +113,3 @@ int firstPartExe(char *fileNmes)
 }
 
 
-Directive* processDataOrStr(char *str, int *errCode)
-{
-Directive *d;
-    d= malloc( sizeof (Directive));
-    if(d==NULL)
-    {
-        //error
-        return NULL;
-    }
-    //TO DO
-    //IM THINKING OF HANDELING ALL OF THE DIRECTIVES HER(DATA STR EXTERN ENTRY) BY ADDING A FIELD TO TYPE THEN IN THE FIRST PATH EXEC KUST CHECK THE DIR TYPE AND INSERT IN TABLES ACCORDINGLY
-
-
-    return d;
-
-}

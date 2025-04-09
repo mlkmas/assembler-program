@@ -39,6 +39,7 @@ typedef struct {
       short reg;     // For registers (0-7)
       int imm;   // For immediates (#-5)
      short labelAddress; //
+     char labelName[31];
 
 } Operand;
 typedef struct
@@ -55,7 +56,7 @@ typedef struct
 } MachineWord;
 
 typedef struct {
-    InstrucOp inst;
+    InstrucOp *inst;
     short address;//inst address
     Operand operands[MAX_OPERANDS];
     int wordCount;

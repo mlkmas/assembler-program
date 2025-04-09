@@ -1,6 +1,3 @@
-//
-// Created by malak on 30/03/2025.
-//
 #include <ctype.h>
 #include <string.h>
 #include <stdlib.h>
@@ -26,7 +23,28 @@ void insertSymbol(Symbol **symbolTable, Symbol *symbol, int *symbolCount,size_t 
     (*symbolTable)[*symbolCount].isData = symbol->isData;
     (*symbolCount)++;
 }
+void insertDir(Directive *dInst,Directive **directives, int *err, size_t *dirCapacity,int *dirCount)
+{
+    size_t capacity=(*dirCapacity);
+    if ((size_t) dirCount >= capacity)
+    {
+        capacity*= 2;  // Double capacity (common strategy)
+        if (!resizeTable((void **) &directives, capacity, sizeof(Directive)))
+        {
+            //TO DO ERROR RESIZING
+            return;
+        }
+        (*dirCapacity)=capacity;
+    }
+    directives[(*dirCount)]->nums=dInst->nums;
+    directives[(*dirCount)]->len=dInst->len;
+    directives[(*dirCount)]->isData=dInst->isData;
+    if(dInst->str!=NULL)
+       strcpy( directives[(*dirCount)]->str,dInst->str);
+    else  directives[(*dirCount)]->str=NULL;
+    (*dirCount)++;
 
+}
 int validSymbol(Symbol *symbol, Symbol symbolTable[], int symbolCount)
 {
     int i;
@@ -299,4 +317,115 @@ int extractStr(char *lineCopy, Directive *dir,int *err)
     strncpy(dir->str, line + start, dir->len);
     dir->str[dir->len] = '\0'; // Null-terminate the new string
     return 1;
+}
+
+int parseInstruction(char *line, Instruction *instruc, int IC, int *err, int symbolFlag)
+{
+    int i,comma,opCount,num,res;
+    char lineCopy[256], *token;
+    strncpy(lineCopy, line, sizeof(lineCopy));
+    lineCopy[sizeof(lineCopy) - 1] = '\0';
+    token= strtok(lineCopy," \t\n");
+
+    if(symbolFlag==1)/*that means the first word is a symbol, skip it*/
+    {
+        token= strtok(NULL," \t\n");
+    }
+    /*token contains the instruction name*/
+    if(setInstOp(&instruc, token) == 0)
+    {
+        /*it didnt find a suitable instruction,TO DO: handle error*/
+        return 0;
+    }
+    instruc->address=IC;
+
+    comma=0;//comma=0- a comma cant appear here, comma=1- comma should appear
+    opCount=0;
+    instruc->operands[opCount].labelName[0]='\0';
+    while (token!=NULL)
+    {
+        if(opCount>=instruc->inst->numOperands)
+        {
+            /*error an additional op*/
+            return 0;
+        }
+
+        if(strcmp(token,",")==0)
+        { /*its a comma*/
+            if(comma==0)
+            {
+                /*error an additional comma*/
+                return 0;
+            }
+            comma=0;
+        }
+        else{
+            if(token[0]==',')
+            {
+                if(comma==0)
+                {
+                    /*error comma*/
+                    return 0;
+                }
+                else{
+                    comma=0;
+                    removeStartComma(token);
+                }
+            }
+            else{
+                if(comma==1)
+                {
+                    //error missing comma
+                    return 0;
+                }
+                /*does it end with one*/
+                if(token[i?]==',')
+                {
+                    removeEndComma(token);
+                    comma=0;
+                } else comma=1;
+
+                /*now nadle intruc*/
+                /*handle immediate*/
+                if(token[0]=='#')
+                {
+                    /*its an immediate value*/
+                    instruc->operands[opCount].mode=MODE_IMMEDIATE;
+                    //extract num after /make sure there is one#
+                    res=extractNum(&num, token);
+                    if(res==0)
+                    {
+                        //error in imm value
+                        return 0;
+                    }
+                    instruc->operands[opCount].imm=num;
+                    instruc->operands[opCount].labelAddress=-1;
+                    instruc->operands[opCount].reg=-1;
+
+                } else if(token[0]=='&')/*handle relative label*/
+                      {
+                          instruc->operands[opCount].mode=MODE_RELATIVE;
+                          instruc->operands[opCount].reg=-1;
+                      } else {
+                    instruc->operands[opCount].reg= isReg(token);
+                    if(instruc->operands[opCount].reg==-1)
+                    {
+                        //its not a reg then its a label
+                        instruc->operands[opCount].mode=MODE_DIRECT;
+                        //TO DO : CHECK THAT TOKEN IS <31
+                        strcpy(instruc->operands[opCount].labelName,token);
+                    } else{ /*its a reg*/
+                        instruc->operands[opCount].labelAddress=-1;
+                        instruc->operands[opCount].mode=OP_REGISTER;
+                    }
+                }
+            }
+            opCount++;
+        }
+
+
+    }
+
+
+
 }
