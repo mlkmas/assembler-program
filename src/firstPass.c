@@ -91,7 +91,11 @@ int firstPartExe(char *fileNmes)
                         {
                             insertInstruction(&instruction,&instrucs,&instCapactiy,&intrucsCounter);
                             L = instruction.wordCount;
-                            buildFirstWord();
+                            buildFirstWord();//TO DO
+                            if(instruction.wordCount>1)
+                            {
+                                buildWords();//TO DO
+                            }
                             IC+=L;
                         }
                     //its a normal instructuin
