@@ -20,12 +20,15 @@ typedef struct
 
 void extractSymbol(char *line, Symbol *symbol,int isData);//TO DO
 int validSymbol(Symbol *symbol, Symbol symbolTable[], int symbolCount);
-void insertSymbol(Symbol **symbolTable, Symbol *symbol, int *symbolCount,size_t *symbolSize,int DC);
+void insertSymbol(Symbol ***symbolTable, Symbol *symbol, int *symbolCount,size_t *symbolSize,int DC);
 int resizeTable(void **table, size_t newSize, size_t elemCounter);
 void processDataOrStr(int res,Directive *directiveInst,char *line,int *err);
 int extractNums(char *lineCopy, Directive *dir,int *err);
 int countNums(const char *line);
 int extractStr(char *lineCopy, Directive *dir,int *err);
-void insertDir(Directive *directiveInst,Directive **directives, int *err, size_t *dirCapacity,int *dirCount);
+void insertDir(Directive *directiveInst,Directive ***directives, int *err, size_t *dirCapacity,int *dirCount);
+int extractNum(int *num, const char *str);
+int parseInstruction(char *line, Instruction *instruc, int IC, int *err, int symbolFlag);
+int insertInstruction(Instruction *instruction,Instruction ***instrucs,size_t *instCapactiy,int *intrucsCounter);
 
 #endif //UNTITLED6_TABLES_H

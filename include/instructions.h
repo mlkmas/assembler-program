@@ -28,10 +28,11 @@ typedef struct {
 } InstrucOp;
 
 typedef enum {
-    OP_REGISTER,   // r0-r7
-    MODE_DIRECT,     // LOOP (label)
-    MODE_IMMEDIATE,  // #5
-    MODE_RELATIVE    // &LOOP
+    MODE_IMMEDIATE=0,  // #5
+    MODE_DIRECT=1,     // LOOP (label)
+    MODE_RELATIVE=2,    // &LOOP
+    OP_REGISTER=3,   // r0-r7
+
 } AddressingMode;
 
 typedef struct {
@@ -84,5 +85,6 @@ int isInstruction(char *name);
 int isReg(char *name);
 //4 if its entry 3 extern, 1 data 2 string 0 none
 int isDirective(const char* name);
-
+int setInstOp(Instruction *instruc, const char *token);
+int addressingOps(Instruction *instruc);
 #endif //UNTITLED6_INSTRUCTIONS_H

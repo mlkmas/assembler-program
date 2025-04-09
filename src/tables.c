@@ -3,47 +3,68 @@
 #include <stdlib.h>
 #include "../include/tables.h"
 
-void insertSymbol(Symbol **symbolTable, Symbol *symbol, int *symbolCount,size_t *symbolSize,int DC) // ones digit is for entr, tens for ectern
+void insertSymbol(Symbol ***symbolTable, Symbol *symbol, int *symbolCount,size_t *symbolSize,int DC) // ones digit is for entr, tens for ectern
 {
     size_t capacity=(*symbolSize);
     if ((size_t) symbolCount >= capacity)
     {
         capacity*= 2;  // Double capacity (common strategy)
-        if (!resizeTable((void **) &symbolTable, capacity, sizeof(Symbol)))
+        if (!resizeTable((void **)symbolTable, capacity, sizeof(Symbol *)))
         {
            //TO DO ERROR RESIZING
             return;
         }
         (*symbolSize)=capacity;
     }
-    strcpy(symbolTable[*symbolCount]->name, symbol->name);
-    (*symbolTable)[*symbolCount].value = symbol->value;
-    (*symbolTable)[*symbolCount].isEntry = symbol->isEntry ;
-    (*symbolTable)[*symbolCount].isExternal = symbol->isExternal;
-    (*symbolTable)[*symbolCount].isData = symbol->isData;
+    Symbol *newSym = malloc(sizeof(Symbol));
+    if (!newSym)
+    {
+        return; // Allocation failed
+    }
+    // Copy data
+    strcpy(newSym->name, symbol->name);
+    newSym->value = symbol->value;
+    newSym->isEntry = symbol->isEntry;
+    newSym->isExternal = symbol->isExternal;
+    newSym->isData = symbol->isData;
+    // Add to array
+    (*symbolTable)[*symbolCount] = newSym;
     (*symbolCount)++;
 }
-void insertDir(Directive *dInst,Directive **directives, int *err, size_t *dirCapacity,int *dirCount)
+void insertDir(Directive *dInst,Directive ***directives, int *err, size_t *dirCapacity,int *dirCount)
 {
     size_t capacity=(*dirCapacity);
     if ((size_t) dirCount >= capacity)
     {
         capacity*= 2;  // Double capacity (common strategy)
-        if (!resizeTable((void **) &directives, capacity, sizeof(Directive)))
+        if (!resizeTable((void **) directives, capacity, sizeof(Directive)))
         {
             //TO DO ERROR RESIZING
             return;
         }
         (*dirCapacity)=capacity;
     }
-    directives[(*dirCount)]->nums=dInst->nums;
-    directives[(*dirCount)]->len=dInst->len;
-    directives[(*dirCount)]->isData=dInst->isData;
-    if(dInst->str!=NULL)
-       strcpy( directives[(*dirCount)]->str,dInst->str);
-    else  directives[(*dirCount)]->str=NULL;
+    Directive *newDir = malloc(sizeof(Directive));
+    if (!newDir)
+    {
+        return; // Allocation failed
+    }
+    newDir->nums = dInst->nums;
+    newDir->len = dInst->len;
+    newDir->isData = dInst->isData;
+    if (dInst->str != NULL)
+    {
+        newDir->str = malloc(strlen(dInst->str) + 1);
+        if (!newDir->str) {
+            free(newDir);
+            return; // String allocation failed
+        }
+        strcpy(newDir->str, dInst->str);
+    } else {
+        newDir->str = NULL;
+    }
+    (*directives)[*dirCount] = newDir;
     (*dirCount)++;
-
 }
 int validSymbol(Symbol *symbol, Symbol symbolTable[], int symbolCount)
 {
@@ -322,6 +343,7 @@ int extractStr(char *lineCopy, Directive *dir,int *err)
 int parseInstruction(char *line, Instruction *instruc, int IC, int *err, int symbolFlag)
 {
     int i,comma,opCount,num,res;
+    size_t length;
     char lineCopy[256], *token;
     strncpy(lineCopy, line, sizeof(lineCopy));
     lineCopy[sizeof(lineCopy) - 1] = '\0';
@@ -332,17 +354,18 @@ int parseInstruction(char *line, Instruction *instruc, int IC, int *err, int sym
         token= strtok(NULL," \t\n");
     }
     /*token contains the instruction name*/
-    if(setInstOp(&instruc, token) == 0)
+    if(token == NULL || setInstOp(instruc, token) == 0)
     {
         /*it didnt find a suitable instruction,TO DO: handle error*/
         return 0;
     }
     instruc->address=IC;
+    instruc->wordCount=1;
 
     comma=0;//comma=0- a comma cant appear here, comma=1- comma should appear
     opCount=0;
     instruc->operands[opCount].labelName[0]='\0';
-    while (token!=NULL)
+    while ((token = strtok(NULL, " \t\n")) != NULL)
     {
         if(opCount>=instruc->inst->numOperands)
         {
@@ -358,8 +381,9 @@ int parseInstruction(char *line, Instruction *instruc, int IC, int *err, int sym
                 return 0;
             }
             comma=0;
+            continue;//get the next token
         }
-        else{
+        /*check for comma at start */
             if(token[0]==',')
             {
                 if(comma==0)
@@ -367,24 +391,25 @@ int parseInstruction(char *line, Instruction *instruc, int IC, int *err, int sym
                     /*error comma*/
                     return 0;
                 }
-                else{
-                    comma=0;
-                    removeStartComma(token);
-                }
+                /*Remove comma from start*/
+                memmove(token, token + 1, strlen(token));
+                comma = 1;
+            } // Case 3: Token doesn't start with comma but we expected one
+            else if (comma == 1)
+            {
+               // *err = ERR_MISSING_COMMA;
+                return 0;
             }
-            else{
-                if(comma==1)
-                {
-                    //error missing comma
-                    return 0;
-                }
-                /*does it end with one*/
-                if(token[i?]==',')
-                {
-                    removeEndComma(token);
-                    comma=0;
-                } else comma=1;
-
+        // Check for trailing comma
+         length = strlen(token);
+        if (length > 0 && token[length-1] == ',')
+        {
+            // Remove comma from end
+            token[length - 1] = '\0';
+            comma = 0;
+        } else {
+            comma = 1;
+        }
                 /*now nadle intruc*/
                 /*handle immediate*/
                 if(token[0]=='#')
@@ -392,20 +417,23 @@ int parseInstruction(char *line, Instruction *instruc, int IC, int *err, int sym
                     /*its an immediate value*/
                     instruc->operands[opCount].mode=MODE_IMMEDIATE;
                     //extract num after /make sure there is one#
-                    res=extractNum(&num, token);
-                    if(res==0)
+                    if (extractNum(&instruc->operands[opCount].imm, token + 1) == 0)
                     {
-                        //error in imm value
+                       // *err = ERR_INVALID_IMMEDIATE;
                         return 0;
                     }
-                    instruc->operands[opCount].imm=num;
-                    instruc->operands[opCount].labelAddress=-1;
-                    instruc->operands[opCount].reg=-1;
+                    instruc->operands[opCount].labelAddress = -1;
+                    instruc->operands[opCount].reg = -1;
+                    instruc->wordCount++;
 
                 } else if(token[0]=='&')/*handle relative label*/
                       {
                           instruc->operands[opCount].mode=MODE_RELATIVE;
                           instruc->operands[opCount].reg=-1;
+                          //TO DO CHECK LABEL NAME SIZE
+                          strncpy(instruc->operands[opCount].labelName, token + 1, 30);
+                          instruc->operands[opCount].labelName[30] = '\0';
+                          instruc->wordCount++;
                       } else {
                     instruc->operands[opCount].reg= isReg(token);
                     if(instruc->operands[opCount].reg==-1)
@@ -413,19 +441,94 @@ int parseInstruction(char *line, Instruction *instruc, int IC, int *err, int sym
                         //its not a reg then its a label
                         instruc->operands[opCount].mode=MODE_DIRECT;
                         //TO DO : CHECK THAT TOKEN IS <31
-                        strcpy(instruc->operands[opCount].labelName,token);
+                        strncpy(instruc->operands[opCount].labelName, token, 30);
+                        instruc->operands[opCount].labelName[30] = '\0';
+                        instruc->wordCount++;
                     } else{ /*its a reg*/
                         instruc->operands[opCount].labelAddress=-1;
                         instruc->operands[opCount].mode=OP_REGISTER;
                     }
                 }
-            }
+
             opCount++;
-        }
 
 
     }
+    if (opCount < instruc->inst->numOperands)
+    {
+       // *err = ERR_TOO_FEW_OPERANDS;
+        return 0;
+    }
+    //TO DO, IMPLEMENT addressingOps functions that checks if the addressing methodes are correct
+    if (addressingOps(instruc) == 0)
+    {
+       // *err = ERR_ILLEGAL_ADDRESSING;
+        return 0;
+    }
 
+    return 1;
+}
 
+int extractNum(int *num, const char *str)
+{
+    char *endptr;
+    long value;
 
+    // Check for empty string
+    if (*str == '\0')
+    {
+        return 0;
+    }
+    // Convert string to number
+    value = strtol(str, &endptr, 10);
+
+    // Check for conversion errors
+    if (endptr == str)
+    {  // No digits were converted
+        return 0;
+    }
+
+    // Check for trailing non-whitespace characters
+    while (*endptr != '\0') {
+        if (!isspace((unsigned char)*endptr))
+        {
+            return 0;
+        }
+        endptr++;
+    }
+    // Check for overflow/underflow
+    if (value > INT_MAX || value < INT_MIN) {
+        return 0;
+    }
+    *num = (int)value;
+    return 1;
+}
+int insertInstruction(Instruction *instruction,Instruction ***instrucs,size_t *instCapactiy, int *intrucsCounter)
+{
+    size_t capacity=(*instCapactiy);
+    if ((size_t)(*intrucsCounter) >= capacity)
+    {
+        capacity = (capacity == 0) ? 1 : capacity * 2;
+
+        if (!resizeTable((void **) instrucs, capacity, sizeof(Instruction*)))
+        {
+            //TO DO ERROR RESIZING
+            return 0;
+        }
+        (*instCapactiy)=capacity;
+    }
+    Instruction *newInst = malloc(sizeof(Instruction));
+    if (!newInst)
+    {
+        // Handle memory allocation failure
+        return 0;
+    }
+
+    // Copy the instruction data
+    *newInst = *instruction;
+
+    // Add to the array
+    (*instrucs)[*intrucsCounter] = newInst;
+    (*intrucsCounter)++;
+    return 1;
 }

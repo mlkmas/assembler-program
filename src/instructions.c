@@ -16,7 +16,7 @@ const RegMap regTable[] = {
         {"psw", 8},
         {"\0", -1}
 };
-const InstrucOp instructions[] =
+ InstrucOp instructions[] =
         {
         {"add",  2, 2},
         {"sub",  2, 2},
@@ -74,4 +74,84 @@ int isDirective(const char* name)
             return i+1;
     }
     return 0;
+}
+int setInstOp(Instruction *instruc, const char *token)
+{
+    int i;
+    // Search through the instructions table
+    for ( i = 0; instructions[i].name != NULL; i++)
+    {
+        if (strcmp(instructions[i].name, token) == 0)
+        {
+            // Found a match - store the pointer
+            instruc->inst = &instructions[i];
+            return 1;  // Success
+        }
+    }
+    return 0;  // Not found
+}
+
+int addressingOps(Instruction *instruc)
+{
+    int i,op,err;
+    err=1;//no error
+    op=instruc->inst->opcode;
+    /*source reg addressing modes*/
+
+    if(op>=0 && op<2)
+    {
+        if(instruc->operands[0].mode==2)
+        {
+            err= 0;
+        }
+    }
+    if(op==4)
+    {
+        if(instruc->operands[0].mode!=1)
+        {
+            err= 0;
+        }
+    }
+
+    /*dist reg addressing modes*/
+
+    if(op==0 ||op>=2 || op==4)
+    {
+        if(instruc->operands[1].mode==2 || instruc->operands[1].mode==0  )
+        {
+            err= 0;
+        }
+    }
+    if(op==1)
+    {
+        if(instruc->operands[1].mode==2 )
+        {
+            err= 0;
+        }
+
+    }
+
+    if(op==5 || op==12)
+    {
+        if(instruc->operands[0].mode==2 || instruc->operands[0].mode==0  )
+        {
+            err= 0;
+        }
+    }
+    if(op==13)
+    {
+        if(instruc->operands[1].mode==2 )
+        {
+            err= 0;
+        }
+
+    }
+    if(op==9)
+    {
+        if(instruc->operands[0].mode==0 || instruc->operands[0].mode==3 )
+        {
+            err= 0;
+        }
+    }
+    return err;
 }
