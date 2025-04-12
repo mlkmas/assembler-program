@@ -6,9 +6,10 @@
 #include "../include/tables.h"
 int firstPartExe(char *fileNmes)
 {
-    int IC, DC, res, L,i, symbolCount = 0,dirCount=0,errFlag=0,err=-1,symbolFlag=-1,externsCounter=0,intrucsCounter=0;
+    int IC, DC, res, L,i, symbolCount = 0,dirCount=0,errFlag=0,err=-1,symbolFlag=-1,externsCounter=0,intrucsCounter=0,wordsCount=0;
     size_t symTableCap=10, dirCapacity=10,instCapactiy=10;
     Symbol *symbolTable= malloc(symTableCap * sizeof(Symbol)), symbol;
+    MachineWord *dataMWs;
     Directive *directives= malloc(dirCapacity * sizeof(Directive)),directiveInst;
     Instruction *instrucs= malloc(instCapactiy * sizeof(Instruction));
     FILE *fp;
@@ -22,7 +23,8 @@ int firstPartExe(char *fileNmes)
         //throw error
         return -1;
     }
-    while (fgets(line, MAX_LINE_LENGTH, fp) != NULL) {
+    while (fgets(line, MAX_LINE_LENGTH, fp) != NULL)
+    {
         if (strcmp(line, "\n") == 0) {
             continue;
         }
@@ -89,16 +91,17 @@ int firstPartExe(char *fileNmes)
 
                         } else
                         {
-                            insertInstruction(&instruction,&instrucs,&instCapactiy,&intrucsCounter);
+
                             L = instruction.wordCount;
-                            buildFirstWord();//TO DO
+                            buildFirstWord(&instruction,&err);//TO DO
                             if(instruction.wordCount>1)
                             {
-                                buildWords();//TO DO
+                                buildFirstWord(&instruction,&err);//TO DO
                             }
+                            insertInstruction(&instruction,&instrucs,&instCapactiy,&intrucsCounter);
                             IC+=L;
                         }
-                    //its a normal instructuin
+
                     if(symbolFlag==1)
                     {
                         insertSymbol(&symbolTable,&symbol,&symbolCount,&symTableCap,IC);
@@ -113,6 +116,19 @@ int firstPartExe(char *fileNmes)
 
         }
     }
+    /*update symbols' table by adding ICF*/
+    for(i=0;i<symbolCount;i++)
+    {
+        symbolTable[i].lineNum+=IC;
+    }
+    dataMWs= malloc(dirCount * sizeof(MachineWord));
+    /*set data mwords*/
+    for(i=0;i<dirCount;i++)
+    {
+        setDataMWord(&dataMWs,&wordsCount,&err,&directives[i]);
+    }
+
+    secondPartExec();
     fclose(fp);
 }
 

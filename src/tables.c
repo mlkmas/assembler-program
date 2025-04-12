@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include "../include/tables.h"
 
-void insertSymbol(Symbol ***symbolTable, Symbol *symbol, int *symbolCount,size_t *symbolSize,int DC) // ones digit is for entr, tens for ectern
+void insertSymbol(Symbol **symbolTable, Symbol *symbol, int *symbolCount,size_t *symbolSize,int DC) // ones digit is for entr, tens for ectern
 {
     size_t capacity=(*symbolSize);
     if ((size_t) symbolCount >= capacity)
@@ -27,11 +27,12 @@ void insertSymbol(Symbol ***symbolTable, Symbol *symbol, int *symbolCount,size_t
     newSym->isEntry = symbol->isEntry;
     newSym->isExternal = symbol->isExternal;
     newSym->isData = symbol->isData;
+    newSym->lineNum=DC;
     // Add to array
-    (*symbolTable)[*symbolCount] = newSym;
+    symbolTable[*symbolCount] = newSym;
     (*symbolCount)++;
 }
-void insertDir(Directive *dInst,Directive ***directives, int *err, size_t *dirCapacity,int *dirCount)
+void insertDir(Directive *dInst,Directive **directives, int *err, size_t *dirCapacity,int *dirCount)
 {
     size_t capacity=(*dirCapacity);
     if ((size_t) dirCount >= capacity)
@@ -63,13 +64,13 @@ void insertDir(Directive *dInst,Directive ***directives, int *err, size_t *dirCa
     } else {
         newDir->str = NULL;
     }
-    (*directives)[*dirCount] = newDir;
+    directives[*dirCount] = newDir;
     (*dirCount)++;
 }
 int validSymbol(Symbol *symbol, Symbol symbolTable[], int symbolCount)
 {
     int i;
-    if (!symbol->name ||symbol->name[0]=='\0' || !isalpha(symbol->name[0]))
+    if (symbol->name[0]=='\0' || !isalpha(symbol->name[0]))
     {
         return 0;
     }
@@ -152,7 +153,7 @@ void processDataOrStr(int res,Directive *directiveInst,char *line,int *err)
 {
     //TO DO : CHECK IF I NEED TO STORE THE SYMBOL
     char lineCopy[256];
-    char *token;
+
     // Make a copy of the line
     strncpy(lineCopy, line, sizeof(lineCopy));
     lineCopy[sizeof(lineCopy) - 1] = '\0';
@@ -183,7 +184,7 @@ int extractNums(char *lineCopy, Directive *dir,int *err)
 {
     char line[256];
     strncpy(line, lineCopy, sizeof(line));
-    int c,i,numIndex,sign,currNum,flag,comma; //the flag is 0 in case it shouldnt be a ,
+    int c,i,numIndex,sign,currNum,flag; //the flag is 0 in case it shouldnt be a ,
     numIndex = 0;
      sign = 1;
     c= countNums(line);
@@ -203,12 +204,17 @@ int extractNums(char *lineCopy, Directive *dir,int *err)
     i=0;
     while (line[i] != '\0')
     {
-        if ((isdigit(line[i]) && flag==0) || (line[i] == '-' && isdigit(line[i + 1])))
+        if ((isdigit(line[i]) && flag==0) || (line[i] == '-' && isdigit(line[i + 1])) || (line[i] == '+' && isdigit(line[i + 1])))
         {
             sign = 1;
             if (line[i] == '-')
             {
                 sign = -1;
+                i++;
+            }
+            if (line[i] == '+')
+            {
+                sign = 1;
                 i++;
             }
              currNum = 0;
@@ -265,7 +271,7 @@ int extractStr(char *lineCopy, Directive *dir,int *err)
 {
     char line[256];
     strncpy(line, lineCopy, sizeof(line));
-    char *token,*colonPtr;
+    char *token;
     int start,i;
 
     token = strtok(line, " ");
@@ -342,7 +348,7 @@ int extractStr(char *lineCopy, Directive *dir,int *err)
 
 int parseInstruction(char *line, Instruction *instruc, int IC, int *err, int symbolFlag)
 {
-    int i,comma,opCount,num,res;
+    int comma,opCount;
     size_t length;
     char lineCopy[256], *token;
     strncpy(lineCopy, line, sizeof(lineCopy));
@@ -503,7 +509,7 @@ int extractNum(int *num, const char *str)
     *num = (int)value;
     return 1;
 }
-int insertInstruction(Instruction *instruction,Instruction ***instrucs,size_t *instCapactiy, int *intrucsCounter)
+int insertInstruction(Instruction *instruction,Instruction **instrucs,size_t *instCapactiy, int *intrucsCounter)
 {
     size_t capacity=(*instCapactiy);
     if ((size_t)(*intrucsCounter) >= capacity)
@@ -528,7 +534,68 @@ int insertInstruction(Instruction *instruction,Instruction ***instrucs,size_t *i
     *newInst = *instruction;
 
     // Add to the array
-    (*instrucs)[*intrucsCounter] = newInst;
+    instrucs[*intrucsCounter] = newInst;
     (*intrucsCounter)++;
     return 1;
+}
+void buildFirstWord(Instruction *ins,int *err)
+{
+
+    uint32_t word = 0;
+    int ARE;
+    AddressingMode srcMode,destMode;
+    if(ins->inst->numOperands==0)
+    {
+        srcMode=0;
+        destMode=0;
+    }
+    else{
+        srcMode= (ins->inst->numOperands==2)?ins->operands[0].mode :0;
+        destMode= (ins->inst->numOperands==2)?ins->operands[1].mode :ins->operands[0].mode;
+
+    }
+    ARE=001;
+//TO DO MAKE SURE TO GIVE REG=0 IN CASE THERE WASNT AND NOT -1
+    word |= (ins->inst->opcode & 0x3F) << 18;     // Opcode (bits 23-18)
+    word |= (srcMode & 0x3) << 16;      // Source mode (bits 17-16)
+    word |= (ins->operands[0].reg & 0x7) << 13;           // Source reg (bits 15-13)
+    word |= (destMode & 0x3) << 11;     // Dest mode (bits 12-11)
+    word |= (ins->operands[1].reg & 0x7) << 8;            // Dest reg (bits 10-8)
+    word |= (ins->inst->funct & 0x1F) << 3;        // Funct (bits 7-3)
+    word |= (ARE & 0x7);
+
+    // Store in the struct (only 24 bits)
+    ins->words[0].word = word & 0xFFFFFF; // Mask to 24 bits
+}
+void buildLabelMW(Instruction *ins,int *err,int add,int i)
+{
+    ins->words[i].word= add& 0xFFFFFF;
+
+}
+void setDataMWord(MachineWord **mw, int *wordsCount, int *err, Directive *dir)
+{
+    if (!mw || !dir || wordsCount < 0)
+    {
+       //TO DO  if (err) *err = 1;
+        return;
+    }
+
+    int i;
+    if (dir->isData)
+    {
+        // Process .data directive
+        for (i = 0; i < dir->len; i++)
+        {
+            (*mw)[*wordsCount + i].word = dir->nums[i] & 0xFFFFFF;  // Ensure only 24 bits are stored
+        }
+    } else {
+        // Process .string directive
+        for (i = 0; i < dir->len; i++)
+        {
+            (*mw)[*wordsCount + i].word = (uint8_t)dir->str[i]; // Each char becomes 24-bit word (lower 8 bits used)
+        }
+    }
+
+    *wordsCount += dir->len;
+    if (err) *err = 0; // success
 }

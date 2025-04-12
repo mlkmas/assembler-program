@@ -45,15 +45,7 @@ typedef struct {
 } Operand;
 typedef struct
 {
-    uint32_t opcode :6;
-    uint32_t funct :5;
-    uint32_t rd :3;
-    uint32_t rs :3;
-    uint32_t src_mode :2;
-    uint32_t dest_mode :2;
-    uint32_t A :1;
-    uint32_t R :1;
-    uint32_t E :1;
+    uint32_t word :24;
 } MachineWord;
 
 typedef struct {
@@ -65,12 +57,6 @@ typedef struct {
 } Instruction;
 
 
-/* Structure to represent code or data */
-typedef struct
-{
-    int address;         // Address line in memory
-    uint32_t mw;           // machine word
-} codeConv;
 
 /* Structure to represent other tables ( externs, entries) */
 typedef struct {
