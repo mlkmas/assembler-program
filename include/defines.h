@@ -13,6 +13,7 @@
 #define EXT_EXT ".ext"
 #define MACRO_EXT ".am"
 #define INITIAL_IC 100
+#define IC_MAX
 
 
 #endif /*UNTITLED6_DEFINES_H */

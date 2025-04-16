@@ -19,7 +19,7 @@ void* handleMalloc(int size)
 
 /* file handeling functions: */
 //////////////////////////////////////////maybe change the file name to fixed mac len 256 and not malloc
-char* addFile(char *fileName, char *extenstion)
+char* addFile(const char *fileName, const char *extenstion)
 {
     char *dot,*fullName;
     int len=MAX_LINE_LENGTH*sizeof(char);

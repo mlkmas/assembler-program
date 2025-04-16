@@ -17,7 +17,11 @@ typedef struct
     char *fileName; //file name
     int lineNum;//line nums error
 } SourcePosition; //for tracking lines and its file
-
+typedef struct
+{
+    char name[32];
+    int line;
+}extEntTable;
 void extractSymbol(char *line, Symbol *symbol,int isData);//TO DO
 int validSymbol(Symbol *symbol, Symbol symbolTable[], int symbolCount);
 void insertSymbol(Symbol **symbolTable, Symbol *symbol, int *symbolCount,size_t *symbolSize,int DC);

@@ -7,7 +7,7 @@
  * @param extenstion
  * @return
  */
-char* addFile(char *fileName, char *extenstion);
+char* addFile(const char *fileName, const char *extenstion);
 /***
  * remove white spaces from the line
  * @param line

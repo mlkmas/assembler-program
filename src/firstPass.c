@@ -6,8 +6,10 @@
 #include "../include/tables.h"
 int firstPartExe(char *fileNmes)
 {
-    int IC, DC, res, L,i, symbolCount = 0,dirCount=0,errFlag=0,err=-1,symbolFlag=-1,externsCounter=0,intrucsCounter=0,wordsCount=0;
+    int IC, DC, res, L,i, symbolCount = 0,dirCount=0,errFlag=0,err=-1,symbolFlag=-1,externsCounter=0,intrucsCounter=0,
+    wordsCount=0,entriesCounter=0;
     size_t symTableCap=10, dirCapacity=10,instCapactiy=10;
+    extEntTable *externs; //TO DO: ADD THE EXTERN TABLE EVERYWHERE
     Symbol *symbolTable= malloc(symTableCap * sizeof(Symbol)), symbol;
     MachineWord *dataMWs;
     Directive *directives= malloc(dirCapacity * sizeof(Directive)),directiveInst;
@@ -65,6 +67,7 @@ int firstPartExe(char *fileNmes)
                 case 4:
                 {
                     //its entry, will be handeled in second pass so just skip to the next line
+                    entriesCounter++;
                     break;
                 }
                 case 3:
