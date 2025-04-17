@@ -45,6 +45,7 @@ typedef struct {
 } Operand;
 typedef struct
 {
+char name[32];
     uint32_t word :24;
 } MachineWord;
 
@@ -57,12 +58,6 @@ typedef struct {
 } Instruction;
 
 
-
-/* Structure to represent other tables ( externs, entries) */
-typedef struct {
-    char name[MAX_LINE_LENGTH];  // Name of the label
-    int address;                 // Address of the label
-} otherTable;
 
 
 

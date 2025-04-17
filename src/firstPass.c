@@ -1,25 +1,28 @@
 #include "../include/firstPass.h"
+#include "../include/secondPass.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 
 #include "../include/tables.h"
-int firstPartExe(char *fileNmes)
+int firstPartExe(char *fileName)
 {
     int IC, DC, res, L,i, symbolCount = 0,dirCount=0,errFlag=0,err=-1,symbolFlag=-1,externsCounter=0,intrucsCounter=0,
-    wordsCount=0,entriesCounter=0;
-    size_t symTableCap=10, dirCapacity=10,instCapactiy=10;
-    extEntTable *externs; //TO DO: ADD THE EXTERN TABLE EVERYWHERE
+    wordsCount=0,entriesCounter=0,lineNum=0;
+    size_t symTableCap=10, dirCapacity=10,instCapactiy=10,entCap=10,exCap=10;
+    extEntTable *externs,*entries; //TO DO: ADD THE EXTERN TABLE EVERYWHERE
+    externs=malloc(exCap * sizeof(extEntTable));
+    entries=malloc(entCap * sizeof(extEntTable));
     Symbol *symbolTable= malloc(symTableCap * sizeof(Symbol)), symbol;
     MachineWord *dataMWs;
     Directive *directives= malloc(dirCapacity * sizeof(Directive)),directiveInst;
     Instruction *instrucs= malloc(instCapactiy * sizeof(Instruction));
     FILE *fp;
-    char line[MAX_LINE_LENGTH], *str,*pos;
+    char line[MAX_LINE_LENGTH], *str = NULL,*pos;
     IC = 100;
     DC = 0;
     Instruction instruction;
-    fp= fopen(fileNmes,"r");
+    fp= fopen(fileName,"r");
     if(fp==NULL)
     {
         //throw error
@@ -27,6 +30,7 @@ int firstPartExe(char *fileNmes)
     }
     while (fgets(line, MAX_LINE_LENGTH, fp) != NULL)
     {
+        lineNum++;
         if (strcmp(line, "\n") == 0) {
             continue;
         }
@@ -66,27 +70,29 @@ int firstPartExe(char *fileNmes)
                 }
                 case 4:
                 {
-                    //its entry, will be handeled in second pass so just skip to the next line
+                    if(inserExternEntry(entries,&entriesCounter,symbol.name,&entCap,lineNum)==0)
+                    {
+                        //err
+                    }
                     entriesCounter++;
                     break;
                 }
                 case 3:
                 {
                     //  its extern
-                    //TO DO
-                    if(symbolFlag==1)
+                    if(inserExternEntry(externs,&externsCounter,symbol.name,&exCap, lineNum)==0)
                     {
-                        insertSymbol(&symbolTable,&symbol,&symbolCount,&symTableCap,0);
-                        externsCounter++;
-                        symbolFlag=0;
+                        //err
                     }
+                    externsCounter++;
+                    symbolFlag=0;
                     break;
                 }
                 default:
                 {
 
                         //TO DO: THIS WILL FILL THE INSTRUCTION DETAILS
-                        if (parseInstruction(line, &instruction,IC,&err,&symbolFlag) == 0)
+                        if (parseInstruction(line, &instruction,IC,&err,symbolFlag) == 0)
                         {
                             //the instruction has something illegal
                             //ERROR
@@ -131,8 +137,34 @@ int firstPartExe(char *fileNmes)
         setDataMWord(&dataMWs,&wordsCount,&err,&directives[i]);
     }
 
-    secondPartExec();
-    fclose(fp);
+    if( secondPartExec(fileName,symbolTable ,  IC,  DC,  symbolCount,  externsCounter, entriesCounter,
+     dataMWs, externs, entries, err, instrucs,  intrucsCounter,  L)==0)
+    {
+        //err
+        fclose(fp);
+        return 0;
+    }
+    return 1;
 }
 
 
+inserExternEntry(extEntTable *table,int *count,char name[32],size_t *capacity,int line)
+{
+  size_t newSize;
+
+  if(*capacity>=*count)
+  {
+    newSize=(*capacity)*2;
+     if( resizeTable((void **)table,newSize,sizeof (extEntTable))==0)
+      {
+      //err
+       return 0;
+      }
+(*capacity)=newSize;
+   }
+
+strcpy(table[*count].name,name);
+table [(*count)++].line=line;
+
+return 1;
+}

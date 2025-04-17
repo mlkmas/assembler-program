@@ -567,7 +567,7 @@ void buildFirstWord(Instruction *ins,int *err)
     // Store in the struct (only 24 bits)
     ins->words[0].word = word & 0xFFFFFF; // Mask to 24 bits
 }
-void buildLabelMW(Instruction *ins,int *err,int add,int i)
+void buildLabelMW(Instruction *ins,int add,int i)
 {
     ins->words[i].word= add& 0xFFFFFF;
 

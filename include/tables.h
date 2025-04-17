@@ -17,11 +17,16 @@ typedef struct
     char *fileName; //file name
     int lineNum;//line nums error
 } SourcePosition; //for tracking lines and its file
+
+
+/* Structure to represent other tables ( externs, entries) */
 typedef struct
 {
     char name[32];
     int line;
+
 }extEntTable;
+
 void extractSymbol(char *line, Symbol *symbol,int isData);//TO DO
 int validSymbol(Symbol *symbol, Symbol symbolTable[], int symbolCount);
 void insertSymbol(Symbol **symbolTable, Symbol *symbol, int *symbolCount,size_t *symbolSize,int DC);
@@ -35,6 +40,6 @@ int extractNum(int *num, const char *str);
 int parseInstruction(char *line, Instruction *instruc, int IC, int *err, int symbolFlag);
 int insertInstruction(Instruction *instruction,Instruction **instrucs,size_t *instCapactiy,int *intrucsCounter);
 void buildFirstWord(Instruction *ins,int *err);
-void buildLabelMW(Instruction *ins,int *err,int add,int i);
+void buildLabelMW(Instruction *ins,int add,int i);
 void setDataMWord(MachineWord **mw, int *wordsCount, int *err, Directive *dir);
 #endif //UNTITLED6_TABLES_H
