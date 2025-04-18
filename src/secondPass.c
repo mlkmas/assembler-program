@@ -3,6 +3,7 @@
 #include <string.h>
 #include "../include/secondPass.h"
 #include "../include/utils.h"
+#include "../include/errors.h"
 int secondPartExec(char *file_name, Symbol *symbolTable , int IC, int DC, int symbolCount, int externsCounter,int entriesCounter,
                    MachineWord *dataWords, extEntTable *externs, extEntTable *entries, int err, Instruction *instrcs, int instrcsCount, int L)
     {
@@ -11,23 +12,27 @@ int secondPartExec(char *file_name, Symbol *symbolTable , int IC, int DC, int sy
     size_t exWordsCap;
         exWordsCap=10,exWordsCounter=0;
 
+        /* Create machine code words from instructions */
         codeWords= createCodeWords(instrcs,instrcsCount,L);
         if (!codeWords)
         {
-           //err
+            handleError(ERR_MEM_ALLOC);
+            return 0;
         }
 
         /*checks defined externs / undefined entries
          * seperate functions*/
         if(checkSymbolTables(symbolTable,externs,entries,entriesCounter,externsCounter,symbolCount,&err)==0)
         {
-            //error
+            free(codeWords);
+            return 0;
         }
 
         /*sets the labels machine words */
         if(setInstLabelsMw(symbolTable,symbolCount,&err,instrcs,instrcsCount,&externsWords,&externsCounter,&exWordsCap)==0)//TO DO
         {
-            //error
+            free(codeWords);
+            return 0;
         }
 if(createEntWords(entries,entriesCounter)==0)
 {
@@ -48,7 +53,8 @@ if(createEntWords(entries,entriesCounter)==0)
             printExtEntTable(externsWords,exWordsCounter,"ext",file_name);
         }
 
-        //TO DO FREE EVRYTHING
+        free(codeWords);
+        free(externsWords);
         return !err;
     }
     int writeMWordsToHexObFile(const char *filename, MachineWord *codeWords, int codeLen,MachineWord *dataWords,int dataLen)
@@ -59,7 +65,8 @@ if(createEntWords(entries,entriesCounter)==0)
     FILE *fp = fopen(obFileName, "w");
     if (!fp)
     {
-      //error
+        free(obFileName);
+        handleError(ERR_OPENING_FILE);
         return 0;
     }
         fprintf(fp, "%d %d\n", codeLen, dataLen);

@@ -2,16 +2,17 @@
 #include <string.h>
 #include <stdlib.h>
 #include "../include/tables.h"
-
+#include "../include/errors.h"
 void insertSymbol(Symbol **symbolTable, Symbol *symbol, int *symbolCount,size_t *symbolSize,int DC) // ones digit is for entr, tens for ectern
 {
     size_t capacity=(*symbolSize);
     if ((size_t) symbolCount >= capacity)
     {
-        capacity*= 2;  // Double capacity (common strategy)
+        capacity*= 2;  /*Double capacity (common strategy)*/
+
         if (!resizeTable((void **)symbolTable, capacity, sizeof(Symbol *)))
         {
-           //TO DO ERROR RESIZING
+            handleError(ERR_MEM_ALLOC);
             return;
         }
         (*symbolSize)=capacity;
@@ -19,16 +20,17 @@ void insertSymbol(Symbol **symbolTable, Symbol *symbol, int *symbolCount,size_t 
     Symbol *newSym = malloc(sizeof(Symbol));
     if (!newSym)
     {
-        return; // Allocation failed
+        handleError(ERR_MEM_ALLOC);
+        return;
     }
-    // Copy data
+    /*Copy data*/
     strcpy(newSym->name, symbol->name);
     newSym->value = symbol->value;
     newSym->isEntry = symbol->isEntry;
     newSym->isExternal = symbol->isExternal;
     newSym->isData = symbol->isData;
     newSym->lineNum=DC;
-    // Add to array
+
     symbolTable[*symbolCount] = newSym;
     (*symbolCount)++;
 }
@@ -37,10 +39,10 @@ void insertDir(Directive *dInst,Directive **directives, int *err, size_t *dirCap
     size_t capacity=(*dirCapacity);
     if ((size_t) dirCount >= capacity)
     {
-        capacity*= 2;  // Double capacity (common strategy)
+        capacity*= 2;
         if (!resizeTable((void **) directives, capacity, sizeof(Directive)))
         {
-            //TO DO ERROR RESIZING
+            handleError(ERR_MEM_ALLOC);
             return;
         }
         (*dirCapacity)=capacity;
@@ -48,7 +50,8 @@ void insertDir(Directive *dInst,Directive **directives, int *err, size_t *dirCap
     Directive *newDir = malloc(sizeof(Directive));
     if (!newDir)
     {
-        return; // Allocation failed
+        handleError(ERR_MEM_ALLOC);
+        return;
     }
     newDir->nums = dInst->nums;
     newDir->len = dInst->len;
@@ -58,7 +61,8 @@ void insertDir(Directive *dInst,Directive **directives, int *err, size_t *dirCap
         newDir->str = malloc(strlen(dInst->str) + 1);
         if (!newDir->str) {
             free(newDir);
-            return; // String allocation failed
+            handleError(ERR_MEM_ALLOC);
+            return;
         }
         strcpy(newDir->str, dInst->str);
     } else {
@@ -78,7 +82,7 @@ int validSymbol(Symbol *symbol, Symbol symbolTable[], int symbolCount)
     {
         if(!isalnum(symbol->name[i]))
         {
-            //error
+            handleError(ERR_INVALID_SYM_NAME);
             return 0;
         }
     }
@@ -86,26 +90,26 @@ int validSymbol(Symbol *symbol, Symbol symbolTable[], int symbolCount)
     {
         if (strcmp(symbolTable[i].name, symbol->name) == 0)
         {
-            //TO DO PRINT error
-            return 0; // Symbol already exists
+            handleError(ERR_DUPLICATE_SYMBOL);
+            return 0;
         }
     }
 
     if(isInstruction(symbol->name)==1 )
     {
-        //its not a valis name TO DO ERROR
+        handleError(ERR_INVALID_INSTRUCTION_NAME);
         return 0;
     }
-    return 1; // Valid symbol
+    return 1;
 }
 void extractSymbol(char *line, Symbol *symbol, int isData)
 {
-    char lineCopy[256];
+    char lineCopy[MAX_LINE_LENGTH];
     char *token;
-    // Make a copy of the line
+
     strncpy(lineCopy, line, sizeof(lineCopy));
     lineCopy[sizeof(lineCopy) - 1] = '\0';
-    // Initialize symbol defaults
+
     symbol->name [0]='\0';
     symbol->isExternal = 0;
     symbol->isData = (isData == 1 || isData == 2) ? 1 : 0;
@@ -113,29 +117,30 @@ void extractSymbol(char *line, Symbol *symbol, int isData)
     char *colonPos = strchr(lineCopy, ':');
     if (colonPos)
     {
-        // Extract the first word (the symbol name)
-        token = strtok(lineCopy, " \t\n"); // Get the first word
+        /*Extract the first word (the symbol name)*/
+        token = strtok(lineCopy, " \t\n"); /* Get the first word*/
         if (token && token[strlen(token) - 1] == ':')
         {
-            token[strlen(token) - 1] = '\0'; // Remove the trailing ':'
+            token[strlen(token) - 1] = '\0'; /* Remove the trailing ':' */
             strncpy(symbol->name, token, sizeof(symbol->name));
             symbol->name[sizeof(symbol->name) - 1] = '\0';
         } else
         {
-            // Handle error: invalid symbol format
+            handleError(ERR_INVALID_SYM_FORMAT);
 
         }
     } else if (isData == 3)
     {
-        // If no ':' and isData == 3, extract the second word
-        token = strtok(lineCopy, " \t\n"); // Get the first word (.extern i dont need it)
-        token = strtok(NULL, " \t\n");     // Get the second word
+        /* If no ':' and isData == 3, extract the second word*/
+        token = strtok(lineCopy, " \t\n"); /* Get the first word (.extern i dont need it)*/
+        token = strtok(NULL, " \t\n");     /* Get the second word*/
         if (token)
         {
             strncpy(symbol->name, token, sizeof(symbol->name));
-            symbol->name[sizeof(symbol->name) - 1] = '\0'; // Ensure null-termination
+            symbol->name[sizeof(symbol->name) - 1] = '\0';
         } else {
             // Handle error: no second word found
+            handleError(ERR_INVALID_DATA_FORMAT);
 
         }
     }
@@ -143,25 +148,25 @@ void extractSymbol(char *line, Symbol *symbol, int isData)
 int resizeTable(void **table, size_t newSize, size_t elemCounter)
 {
     void *newTable = realloc(*table, newSize * elemCounter);
-    if (!newTable && newSize > 0) {
-        return 0;  // Resize failed
+    if (!newTable && newSize > 0)
+    {
+        return 0;
     }
     *table = newTable;
     return 1;
 }
 void processDataOrStr(int res,Directive *directiveInst,char *line,int *err)
 {
-    //TO DO : CHECK IF I NEED TO STORE THE SYMBOL
-    char lineCopy[256];
 
-    // Make a copy of the line
+    char lineCopy[MAX_LINE_LENGTH];
+
     strncpy(lineCopy, line, sizeof(lineCopy));
     lineCopy[sizeof(lineCopy) - 1] = '\0';
-    if(res==1)//its .data jandle nums
+    if(res==1)/*its .data handle nums*/
     {
         if(extractNums(lineCopy,directiveInst,err)==0)
         {
-            //handle error
+            handleError(err);
         }
        directiveInst->str=NULL;
         directiveInst->isData=1;

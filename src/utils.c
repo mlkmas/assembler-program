@@ -61,7 +61,7 @@ void removeWhitespace(char* line)
 }
 
 
-void generateOutputFilename(const char* inputFilename, char* outputFilename, const char* newExtension)
+void generateOutputFilename(const char* inputFilename, char outputFilename[MAX_FILE_NAME], const char* newExtension)
 {
 
     strcpy(outputFilename, inputFilename);

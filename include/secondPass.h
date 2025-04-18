@@ -2,6 +2,31 @@
 #define UNTITLED6_SECONDPASS_H
 #include "../include/tables.h"
 
+
+/**
+ * @brief Executes the second pass of the assembler
+ *
+ * Processes the intermediate representation from first pass to:
+ * 1. Generate machine code words
+ * 2. Validate symbol references
+ * 3. Create output files (.ob, .ent, .ext)
+ *
+ * @param file_name Input assembly file name
+ * @param symbolTable Symbol table from first pass
+ * @param IC Instruction counter value
+ * @param DC Data counter value
+ * @param symbolCount Number of symbols in table
+ * @param externsCounter Number of extern symbols
+ * @param entriesCounter Number of entry symbols
+ * @param dataWords Data words from first pass
+ * @param externs Extern table
+ * @param entries Entry table
+ * @param err Error flag
+ * @param instrcs Instructions array
+ * @param instrcsCount Instruction count
+ * @param L  length
+ * @return int 1 on success, 0 on failure
+ */
 int secondPartExec(char *file_name, Symbol *symbolTable , int IC, int DC, int symbolCount, int externsCounter,
                    int entriesCounter, MachineWord *dataWords, extEntTable *externs, extEntTable *entries, int err, Instruction *instrcs, int instrcsCount, int L);
 

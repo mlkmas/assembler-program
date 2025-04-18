@@ -4,6 +4,7 @@
 #include <ctype.h>
 #include <string.h>
 #include "../include/instructions.h"
+#include "../include/errors.h"
 void processFile(const char* inputFilename, const char* outputFilename)
 {
     char line[MAX_LINE_LENGTH];
@@ -11,8 +12,8 @@ void processFile(const char* inputFilename, const char* outputFilename)
     FILE *outputFile= fopen(outputFilename, "w");
     if(!inputFile||!outputFile)
     {
-        //TO DO
-        //throw error opening a file
+        handleError(ERR_OPENING_FILE);
+        return;
     }
     while (fgets(line,sizeof (line),inputFile))
     {
@@ -34,16 +35,14 @@ int preExec(char fileName[])
     const char newFileName[MAX_FILE_NAME];
     generateOutputFilename(fileName,newFileName,".clean");
     processFile(fileName,newFileName);
-    if(newFileName ==NULL)
+    if(newFileName ==NULL ||newFileName[0]=='\0')
     {
-       //empry file
+        handleError(ERR_MEM_ALLOC);
         return 0;
     }
     if(!handleMcro(newFileName,&head))
     {
         freeList(head);
-        //TO DO
-        //CLOSE ALL FILES, FREE ALL MEMORY
         return 0;
     }
     return 1;
@@ -58,14 +57,14 @@ int handleMcro(char *fileName, Node **head)
     fp= fopen(fileName,"r");
     if(!fp)
     {
-        //throw error
+
         return 0;
     }
      generateOutputFilename(fileName,outputFileName, ".am");
     finalFile = fopen(outputFileName, "w");
     if (!finalFile)
     {
-        //throw error
+
         fclose(fp);
         return 0;
     }

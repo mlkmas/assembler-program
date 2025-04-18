@@ -148,7 +148,7 @@ int firstPartExe(char *fileName)
 }
 
 
-inserExternEntry(extEntTable *table,int *count,char name[32],size_t *capacity,int line)
+int inserExternEntry(extEntTable *table,int *count,char name[32],size_t *capacity,int line)
 {
   size_t newSize;
 
