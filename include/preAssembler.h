@@ -9,7 +9,7 @@
  */
 typedef struct Node
 {
-    char key[MAX_KEY_LENGTH];
+    char key[MAX_LABEL_LENGTH];
     char value[MAX_VALUE_LEN];
     struct Node* next;
 }Node;

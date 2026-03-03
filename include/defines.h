@@ -4,12 +4,12 @@
 
 /* File and string handling constants */
 #define MAX_LINE_LENGTH 82        /* Max line length including null terminator */
-#define MAX_KEY_LENGTH 50         /* Max length for symbols/labels */
+#define MAX_LABEL_LENGTH 31         /* Max length for symbols/labels */
 #define MAX_VALUE_LEN 1000        /* Max length for macro values */
 #define MAX_FILE_NAME 256         /* Max filename length */
 
 /* Machine architecture constants */
-#define WORD_BITS 24             /* Number of bits per machine word */
+#define WORD_BITS 12             /* Number of bits per machine word */
 #define NUM_REGISTERS 9          /* r0-r7 + PSW register */
 #define MAX_OPERANDS 2           /* Max operands per instruction */
 
