@@ -43,19 +43,7 @@ typedef struct {
      char labelName[31];
 
 } Operand;
-typedef struct
-{
-char name[32];
-    uint32_t word :24;
-} MachineWord;
 
-/*first word srtuct*/
-typedef struct {
-    unsigned int dstAdd : 2; /*bits 0-1*/
-    unsigned int srcAdd  : 2; /* Bits2-3*/
-    unsigned int funct    : 4; /*bits 4-7*/
-    unsigned int opcode   : 4; /*bits8-11*/
-} instruction;
 
 
 

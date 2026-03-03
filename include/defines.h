@@ -32,30 +32,41 @@
 
 
 
-
-
-
-/* 2. Structure for a Register Word (Addressing Mode 3) */
+/*first word srtuct
+ * instructions word*/
 typedef struct {
-    unsigned int reg_bit : 8;  /* Bits 0-7: One bit per register (r0=bit 0, r7=bit 7) */
-    unsigned int unused  : 4;  /* Bits 8-11: Always 0 */
-} register_word;
+    unsigned int dstAdd : 2; /*bits 0-1*/
+    unsigned int srcAdd  : 2; /* Bits2-3*/
+    unsigned int funct    : 4; /*bits 4-7*/
+    unsigned int opcode   : 4; /*bits8-11*/
+} instruction;
 
-/* 3. Structure for Data Words (Numbers, Distances, or Addresses) */
-typedef struct {
-    signed int value : 12;     /* 12-bit 2's complement number */
-} data_word;
 
-/* 4. A generic memory word that uses a Union to hold ANY of the above types */
-typedef struct {
-    union {
-        instruction_word inst;
-        register_word reg;
-        data_word data;
+/*register word mode 3*/
+typedef struct
+{
+    unsigned int reg_bit : 8;  /*Bits 0-7*/
+    unsigned int unused  : 4;  /* Bits 8-11: Always 0*/
+} regWord;
+
+/* data words*/
+typedef struct
+{
+    signed int value : 12;
+} dataWord;
+
+/* */
+typedef struct
+{
+    union
+    {
+        instruction inst;
+        regWord reg;
+        dataWord data;
     } word;
 
-    char are; /* To store 'A', 'R', or 'E' for the output file */
-} machine_word;
+    char are; /*'A', 'R', or 'E' for the output file*/
+} MachineWord;
 
 
 
