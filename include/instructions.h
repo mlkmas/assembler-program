@@ -49,13 +49,13 @@ char name[32];
     uint32_t word :24;
 } MachineWord;
 
+/*first word srtuct*/
 typedef struct {
-    InstrucOp *inst;
-    short address;//inst address
-    Operand operands[MAX_OPERANDS];
-    int wordCount;
-    MachineWord words[3];
-} Instruction;
+    unsigned int dstAdd : 2; /*bits 0-1*/
+    unsigned int srcAdd  : 2; /* Bits2-3*/
+    unsigned int funct    : 4; /*bits 4-7*/
+    unsigned int opcode   : 4; /*bits8-11*/
+} instruction;
 
 
 

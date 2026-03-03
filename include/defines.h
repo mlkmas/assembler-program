@@ -30,4 +30,37 @@
 #define MACRO_END "mcroend"
 #define COMMENT_SYMBOL ';'
 
+
+
+
+
+
+/* 2. Structure for a Register Word (Addressing Mode 3) */
+typedef struct {
+    unsigned int reg_bit : 8;  /* Bits 0-7: One bit per register (r0=bit 0, r7=bit 7) */
+    unsigned int unused  : 4;  /* Bits 8-11: Always 0 */
+} register_word;
+
+/* 3. Structure for Data Words (Numbers, Distances, or Addresses) */
+typedef struct {
+    signed int value : 12;     /* 12-bit 2's complement number */
+} data_word;
+
+/* 4. A generic memory word that uses a Union to hold ANY of the above types */
+typedef struct {
+    union {
+        instruction_word inst;
+        register_word reg;
+        data_word data;
+    } word;
+
+    char are; /* To store 'A', 'R', or 'E' for the output file */
+} machine_word;
+
+
+
+
+
+
+
 #endif /*UNTITLED6_DEFINES_H */
