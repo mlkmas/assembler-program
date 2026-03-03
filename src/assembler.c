@@ -45,12 +45,21 @@ int main(int argc, char *argv[])
            /* Execute first pass */
            printf("first pass: \n");
            amFile=addFile(argv[i],AM_EXT);
-           if(!firstPartExe(amFile))
+           if(firstPartExe(amFile))
            {
-               free(asFile);
-               free(amFile);
+               //TO DO: IF SECOND PART SUCCEEDED GENERTAE OUT FILES
+               /*
+               if(secondPartExe(amFile))
+               {
+                   generateOutputFiles
+               }
+                */
+
            }
+
+           free(amFile);
        }
+       free(asFile);
 
    }
 
