@@ -15,14 +15,15 @@ typedef enum {
     ERR_INVALID_INSTRUCTION_NAME,
     ERR_INVALID_SYM_FORMAT,
     ERR_INVALID_DATA_FORMAT,
-    ERR_UNKNOWN
+    ERR_UNKNOWN,
+    ERR_COUNT
 } ErrorCode;
 
 /*
  * Handles an error based on error code .
  * Does NOT exit the program, format's error.
  */
-void handleError(ErrorCode code);
+void handleError(ErrorCode code,int lineNum, const char *fileName);
 
 /*
  * Handles a system error and exits the program.

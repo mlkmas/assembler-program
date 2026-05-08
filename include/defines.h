@@ -33,6 +33,14 @@
 #define MAX_WORDS_PER_INSTRUCTION 3
 
 
+/* */
+typedef struct
+{
+    int word;
+    char name[32];/* for extern/intry words in out files */
+    char are; /*'A', 'R', or 'E' for the output file*/
+} MachineWord;
+
 /*first word srtuct
  * instructions word*/
 typedef struct {
@@ -65,13 +73,7 @@ typedef struct
     signed int value : 12;
 } dataWord;
 
-/* */
-typedef struct
-{
-    int word;
-    char name[32];/* for extern/intry words in out files */
-    char are; /*'A', 'R', or 'E' for the output file*/
-} MachineWord;
+
 
 
 
