@@ -56,7 +56,7 @@ int isReg(char *name)
     if(name ==NULL)
         return -1;
     int i;
-    for(i=0;i<10;i++)
+    for(i=0;i<7;i++)
     {
         if(strcmp(name,regTable[i].name)==0)
             return regTable[i].value;
@@ -75,7 +75,7 @@ int isDirective(const char* name)
     }
     return 0;
 }
-int setInstOp(Instruction *instruc, const char *token)
+int setInstOp(instruction *instruc, const char *token)
 {
     int i;
     // Search through the instructions table
