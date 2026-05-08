@@ -30,15 +30,25 @@
 #define MACRO_END "mcroend"
 #define COMMENT_SYMBOL ';'
 
+#define MAX_WORDS_PER_INSTRUCTION 3
 
 
 /*first word srtuct
  * instructions word*/
 typedef struct {
-    unsigned int dstAdd : 2; /*bits 0-1*/
-    unsigned int srcAdd  : 2; /* Bits2-3*/
-    unsigned int funct    : 4; /*bits 4-7*/
-    unsigned int opcode   : 4; /*bits8-11*/
+     int numOperand; /*the number of the operands*/
+     int wordCount; /*the total of the machine words this instruction uses 1-3*/ 
+     int funct ;
+     int opcode ;
+     int address; /*IC valur for the instruction */
+     int lineNum; /*store line number for error mssg*/
+
+     /*operands info*/
+     int mode[2];
+     int reg[2];
+     int imm[2];
+     char labelName[2][32];/*label name in ces mode is 1or2*/
+     MachineWord words[MAX_WORDS_PER_INSTRUCTION];
 } instruction;
 
 
@@ -58,13 +68,8 @@ typedef struct
 /* */
 typedef struct
 {
-    union
-    {
-        instruction inst;
-        regWord reg;
-        dataWord data;
-    } word;
-
+    int word;
+    char name[32];/* for extern/intry words in out files */
     char are; /*'A', 'R', or 'E' for the output file*/
 } MachineWord;
 
