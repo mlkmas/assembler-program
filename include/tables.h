@@ -42,4 +42,9 @@ int insertInstruction(Instruction *instruction,Instruction **instrucs,size_t *in
 void buildFirstWord(Instruction *ins,int *err);
 void buildLabelMW(Instruction *ins,int add,int i);
 void setDataMWord(MachineWord **mw, int *wordsCount, int *err, Directive *dir);
+void updateDataSymbols(Symbol *SymbolTable, int symbolCount,int ICF);
+
+
+
+
 #endif //UNTITLED6_TABLES_H
