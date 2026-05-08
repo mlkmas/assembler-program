@@ -3,6 +3,11 @@
 #include <stdint.h>
 #include "defines.h"
 
+ #define   MODE_IMMEDIATE 0  // #5
+  #define    MODE_DIRECT 1   // LOOP (label)
+    #define  MODE_RELATIVE 2   // &LOOP
+  #define    MODE_REGISTER 3   // r0-r7
+
 typedef struct
 {
     const char name[5]; // Register name (e.g., "r0")
@@ -20,40 +25,21 @@ typedef struct
 } Directive;
 
 typedef struct {
-    const char *name;
-    short opcode;
-    short numOperands;
-    short funct;
+    const char name[6]; /*instruction name ex: add sub ...*/
+    int opcode;
+    int numOperands; /*1-2*/
+    int funct;
 
 } InstrucOp;
 
-typedef enum {
-    MODE_IMMEDIATE=0,  // #5
-    MODE_DIRECT=1,     // LOOP (label)
-    MODE_RELATIVE=2,    // &LOOP
-    OP_REGISTER=3,   // r0-r7
-
-} AddressingMode;
-
-typedef struct {
-    AddressingMode mode;
-      short reg;     // For registers (0-7)
-      int imm;   // For immediates (#-5)
-     short labelAddress; //
-     char labelName[31];
-
-} Operand;
 
 
 
 
 
-
-
-int isInstruction(char *name);
-int isReg(char *name);
-//4 if its entry 3 extern, 1 data 2 string 0 none
-int isDirective(const char* name);
-int setInstOp(Instruction *instruc, const char *token);
-int addressingOps(Instruction *instruc);
+int isInstruction(const char *name);
+int isReg(const char *name);
+int isDirective(const char* name);/* returns 4 if its entry, 3 extern, 1 data, 2 string, 0 none */
+int getInstructionOp(InstrucOp *out, const char *name);
+int checkAddressingModes(Instruction *instruc, int *err);
 #endif //UNTITLED6_INSTRUCTIONS_H

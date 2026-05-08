@@ -57,7 +57,7 @@ typedef struct {
      int imm[2];
      char labelName[2][32];/*label name in ces mode is 1or2*/
      MachineWord words[MAX_WORDS_PER_INSTRUCTION];
-} instruction;
+} Instruction;
 
 
 /*register word mode 3*/
