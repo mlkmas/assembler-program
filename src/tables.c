@@ -345,6 +345,7 @@ int parseInstruction(char *line, Instruction *instruc, int IC, int *err, int sym
     int comma,opCount;
     size_t length;
     char lineCopy[256], *token;
+    InstrucOp op; 
     strncpy(lineCopy, line, sizeof(lineCopy));
     lineCopy[sizeof(lineCopy) - 1] = '\0';
     token= strtok(lineCopy," \t\n");
@@ -354,20 +355,25 @@ int parseInstruction(char *line, Instruction *instruc, int IC, int *err, int sym
         token= strtok(NULL," \t\n");
     }
     /*token contains the instruction name*/
-    if(token == NULL || setInstOp(instruc, token) == 0)
+    if(token == NULL || getInstructionOp(&op, token) == 0)
     {
         /*it didnt find a suitable instruction,TO DO: handle error*/
         return 0;
     }
+    
+    instruc->opcode =op.opcode;          
+    instruc->funct = op.funct;           
+    instruc->numOperand=op.numOperands;  
+
     instruc->address=IC;
     instruc->wordCount=1;
 
     comma=0;//comma=0- a comma cant appear here, comma=1- comma should appear
     opCount=0;
-    instruc->operands[opCount].labelName[0]='\0';
+    instruc->labelName[0][0]='\0';
     while ((token = strtok(NULL, " \t\n")) != NULL)
     {
-        if(opCount>=instruc->inst->numOperands)
+        if(opCount>=instruc->numOperand)
         {
             /*error an additional op*/
             return 0;
@@ -392,61 +398,64 @@ int parseInstruction(char *line, Instruction *instruc, int IC, int *err, int sym
                     return 0;
                 }
                 /*Remove comma from start*/
-                memmove(token, token + 1, strlen(token));
-                comma = 1;
+                memmove(token, token+1, strlen(token));
+                comma= 1;
             } // Case 3: Token doesn't start with comma but we expected one
             else if (comma == 1)
             {
-               // *err = ERR_MISSING_COMMA;
+               /**err = ERR_MISSING_COMMA; */
                 return 0;
             }
-        // Check for trailing comma
+        /*Check for trailing comma */
          length = strlen(token);
         if (length > 0 && token[length-1] == ',')
         {
-            // Remove comma from end
-            token[length - 1] = '\0';
+            /* Remove comma from end*/ 
+            token[length -1]= '\0';
             comma = 0;
-        } else {
-            comma = 1;
+        } else
+         {
+            comma= 1;
         }
                 /*now nadle intruc*/
                 /*handle immediate*/
                 if(token[0]=='#')
                 {
                     /*its an immediate value*/
-                    instruc->operands[opCount].mode=MODE_IMMEDIATE;
+                    instruc->mode[opCount]=MODE_IMMEDIATE;
                     //extract num after /make sure there is one#
-                    if (extractNum(&instruc->operands[opCount].imm, token + 1) == 0)
+                    if (extractNum(&instruc->imm[opCount],token + 1) == 0)
                     {
                        // *err = ERR_INVALID_IMMEDIATE;
                         return 0;
                     }
-                    instruc->operands[opCount].labelAddress = -1;
-                    instruc->operands[opCount].reg = -1;
+                    
+                    instruc->reg[opCount] = -1;
                     instruc->wordCount++;
 
                 } else if(token[0]=='&')/*handle relative label*/
                       {
-                          instruc->operands[opCount].mode=MODE_RELATIVE;
-                          instruc->operands[opCount].reg=-1;
-                          //TO DO CHECK LABEL NAME SIZE
-                          strncpy(instruc->operands[opCount].labelName, token + 1, 30);
-                          instruc->operands[opCount].labelName[30] = '\0';
+                          instruc->mode[opCount].mode=MODE_RELATIVE;
+                          instruc->reg[opCount]=-1;
+                          /*TO DO CHECK LABEL NAME SIZE */
+                          strncpy(instruc->labelName[opCount], token + 1, 30);
+                          instruc->labelName[opCount][30] = '\0';
                           instruc->wordCount++;
-                      } else {
-                    instruc->operands[opCount].reg= isReg(token);
-                    if(instruc->operands[opCount].reg==-1)
+                      } 
+                      else 
+                      {
+                    instruc->reg[opCount]= isReg(token);
+                    if(instruc->reg[opCount]==-1)
                     {
-                        //its not a reg then its a label
-                        instruc->operands[opCount].mode=MODE_DIRECT;
+                        /*its not a reg then its a label*/
+                        instruc->mode[opCount]=MODE_DIRECT;
                         //TO DO : CHECK THAT TOKEN IS <31
-                        strncpy(instruc->operands[opCount].labelName, token, 30);
-                        instruc->operands[opCount].labelName[30] = '\0';
+                        strncpy(instruc->labelName[opCount], token, 30);
+                        instruc->labelName[opCount][30] = '\0';
                         instruc->wordCount++;
                     } else{ /*its a reg*/
-                        instruc->operands[opCount].labelAddress=-1;
-                        instruc->operands[opCount].mode=OP_REGISTER;
+                        instruc->mode[opCount]=MODE_REGISTER;
+                        
                     }
                 }
 
@@ -454,15 +463,15 @@ int parseInstruction(char *line, Instruction *instruc, int IC, int *err, int sym
 
 
     }
-    if (opCount < instruc->inst->numOperands)
+    if (opCount < instruc->numOperand)
     {
-       // *err = ERR_TOO_FEW_OPERANDS;
+       /**err = ERR_TOO_FEW_OPERANDS;*/ 
         return 0;
     }
-    //TO DO, IMPLEMENT addressingOps functions that checks if the addressing methodes are correct
+    /*TO DO, IMPLEMENT addressingOps functions that checks if the addressing methodes are correct*/
     if (addressingOps(instruc) == 0)
     {
-       // *err = ERR_ILLEGAL_ADDRESSING;
+       /**err = ERR_ILLEGAL_ADDRESSING; */
         return 0;
     }
 
