@@ -599,3 +599,17 @@ void setDataMWord(MachineWord **mw, int *wordsCount, int *err, Directive *dir)
     *wordsCount += dir->len;
     if (err) *err = 0; // success
 }
+
+
+void updateDataSymbols(Symbol *symbolTable,int symbolCount,int ICF)
+{
+    int i;
+    for(i = 0;i< symbolCount;i++)
+    {
+        if(symbolTable[i].isData)
+        {
+      symbolTable[i].value+=ICF;
+        }
+           
+    }
+}
