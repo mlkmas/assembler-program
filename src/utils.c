@@ -21,16 +21,12 @@ void* handleMalloc(int size)
 //////////////////////////////////////////maybe change the file name to fixed mac len 256 and not malloc
 char* addFile(const char *fileName, const char *extenstion)
 {
-    char *dot,*fullName;
-    int len=MAX_LINE_LENGTH*sizeof(char);
+    char *fullName;
+    int len=(strlen(fileName)+strlen(extenstion)+1)*sizeof(char);
     fullName=handleMalloc(len);
 
-        dot= strchr(fullName,'.');
-        if(dot !=NULL)
-        {
-            //TO DO
-            //throw error wrong file name
-        }
+        strcpy(fullName,fileName);
+        
     strcat(fullName, extenstion);
     return fullName;
 
