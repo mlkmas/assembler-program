@@ -6,32 +6,21 @@
 void insertSymbol(Symbol **symbolTable, Symbol *symbol, int *symbolCount,size_t *symbolSize,int DC) // ones digit is for entr, tens for ectern
 {
     size_t capacity=(*symbolSize);
-    if ((size_t) symbolCount >= capacity)
+    if ((size_t)(*symbolCount) >= capacity)
     {
         capacity*= 2;  /*Double capacity (common strategy)*/
 
-        if (!resizeTable((void **)symbolTable, capacity, sizeof(Symbol *)))
+        if (!resizeTable((void **)symbolTable, capacity, sizeof(Symbol)))
         {
-            handleError(ERR_MEM_ALLOC);
+            handleError(ERR_MEM_ALLOC,0,"");
             return;
         }
         (*symbolSize)=capacity;
     }
-    Symbol *newSym = malloc(sizeof(Symbol));
-    if (!newSym)
-    {
-        handleError(ERR_MEM_ALLOC);
-        return;
-    }
-    /*Copy data*/
-    strcpy(newSym->name, symbol->name);
-    newSym->value = symbol->value;
-    newSym->isEntry = symbol->isEntry;
-    newSym->isExternal = symbol->isExternal;
-    newSym->isData = symbol->isData;
-    newSym->lineNum=DC;
+    
 
-    symbolTable[*symbolCount] = newSym;
+    (*symbolTable)[*symbolCount] = *symbol;
+     (*symbolTable)[*symbolCount].value = DC;
     (*symbolCount)++;
 }
 void insertDir(Directive *dInst,Directive **directives, int *err, size_t *dirCapacity,int *dirCount)
