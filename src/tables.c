@@ -155,7 +155,7 @@ void processDataOrStr(int res,Directive *directiveInst,char *line,int *err)
     {
         if(extractNums(lineCopy,directiveInst,err)==0)
         {
-            handleError(err,0,"");
+            handleError(ERR_INVALID_DATA_FORMAT,0,"");
         }
        directiveInst->str=NULL;
         directiveInst->isData=1;
