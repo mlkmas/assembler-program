@@ -41,5 +41,5 @@ int isInstruction(const char *name);
 int isReg(const char *name);
 int isDirective(const char* name);/* returns 4 if its entry, 3 extern, 1 data, 2 string, 0 none */
 int getInstructionOp(InstrucOp *out, const char *name);
-int checkAddressingModes(Instruction *instruc, int *err);
+int addressingOps(Instruction *instruc);/*checkAddressingModes*/
 #endif //UNTITLED6_INSTRUCTIONS_H

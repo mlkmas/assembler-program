@@ -18,6 +18,7 @@ const RegMap regTable[] = {
 };
 static const InstrucOp instructions[] =
         {
+    /*  name    opcode  funct  numOperands */
         {"add",  2,10, 2},
         {"sub",  2,11, 2},
         {"mov",  0,0, 2},
@@ -36,8 +37,8 @@ static const InstrucOp instructions[] =
         {"stop",15,0, 0},
         {"\0",  -1, 0,0}  /*sentinel*/
 };
-const char directive[]={".data", ".string", ".extern", ".entry"};
-int isInstruction(char *name)
+static const char *directive[]={".data", ".string", ".extern", ".entry",NULL};
+int isInstruction(const char *name)
 {
     if(name ==NULL)
         return 0;
@@ -51,7 +52,7 @@ int isInstruction(char *name)
 
 }
 
-int isReg(char *name)
+int isReg(const char *name)
 {
     if(name ==NULL)
         return -1;
@@ -65,93 +66,71 @@ int isReg(char *name)
 }
 int isDirective(const char* name)
 {
-    if(name ==NULL)
-        return 0;
     int i;
-    for(i=0;i<4;i++)
+    if(!name)
+        return 0;
+    
+    for(i=0;directive[i]!=NULL;i++)
     {
         if(strcmp(name,directive[i])==0)
             return i+1;
     }
     return 0;
 }
-int setInstOp(instruction *instruc, const char *token)
+int getInstructionOp(InstrucOp *out, const char *name)
 {
     int i;
-    // Search through the instructions table
-    for ( i = 0; instructions[i].name != NULL; i++)
+    /*Search through the instructions table*/
+    for ( i = 0; instructions[i].opcode != -1; i++)
     {
-        if (strcmp(instructions[i].name, token) == 0)
+        if (strcmp(instructions[i].name, name) == 0)
         {
-            // Found a match - store the pointer
-            instruc->inst = &instructions[i];
-            return 1;  // Success
+            
+            *out= instructions[i];
+            return 1; 
         }
     }
-    return 0;  // Not found
+    return 0;  /*not found */
 }
-
+/*checkAddressingModes*/
 int addressingOps(Instruction *instruc)
 {
-    int i,op,err;
-    err=1;//no error
-    op=instruc->inst->opcode;
-    /*source reg addressing modes*/
-
-    if(op>=0 && op<2)
-    {
-        if(instruc->operands[0].mode==2)
-        {
-            err= 0;
-        }
-    }
+    int op;
+    op=instruc->opcode;
+   
     if(op==4)
     {
-        if(instruc->operands[0].mode!=1)
+        if(instruc->mode[0]!=1)
         {
-            err= 0;
+            return 0;
         }
     }
 
     /*dist reg addressing modes*/
 
-    if(op==0 ||op>=2 || op==4)
+    if(op==0 ||op==2 || op==4)
     {
-        if(instruc->operands[1].mode==2 || instruc->operands[1].mode==0  )
+        if(instruc->mode[1]==0  )
         {
-            err= 0;
+            return 0;
         }
     }
-    if(op==1)
+    if(op==12 || op==5)
     {
-        if(instruc->operands[1].mode==2 )
+        if(instruc->mode[0]==0 )
         {
-            err= 0;
-        }
-
-    }
-
-    if(op==5 || op==12)
-    {
-        if(instruc->operands[0].mode==2 || instruc->operands[0].mode==0  )
-        {
-            err= 0;
-        }
-    }
-    if(op==13)
-    {
-        if(instruc->operands[1].mode==2 )
-        {
-            err= 0;
+            return 0;
         }
 
     }
+
+    
     if(op==9)
     {
-        if(instruc->operands[0].mode==0 || instruc->operands[0].mode==3 )
+        if(instruc->mode[0]==0 || instruc->mode[0]==3 )
         {
-            err= 0;
+           return 0;
         }
     }
-    return err;
+    return 1;
 }
