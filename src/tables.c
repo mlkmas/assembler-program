@@ -544,31 +544,28 @@ int insertInstruction(Instruction *instruction,Instruction **instrucs,size_t *in
 void buildFirstWord(Instruction *ins,int *err)
 {
 
-    uint32_t word = 0;
-    int ARE;
-    AddressingMode srcMode,destMode;
-    if(ins->inst->numOperands==0)
+    int word = 0;
+    int srcMode,destMode;
+    if(ins->numOperand==0)
     {
         srcMode=0;
         destMode=0;
     }
     else{
-        srcMode= (ins->inst->numOperands==2)?ins->operands[0].mode :0;
-        destMode= (ins->inst->numOperands==2)?ins->operands[1].mode :ins->operands[0].mode;
+        srcMode= (ins->numOperand==2)?ins->mode[0] :0;
+        destMode= (ins->numOperand==2)?ins->mode[1] :ins->mode[0];
 
     }
-    ARE=001;
-//TO DO MAKE SURE TO GIVE REG=0 IN CASE THERE WASNT AND NOT -1
-    word |= (ins->inst->opcode & 0x3F) << 18;     // Opcode (bits 23-18)
-    word |= (srcMode & 0x3) << 16;      // Source mode (bits 17-16)
-    word |= (ins->operands[0].reg & 0x7) << 13;           // Source reg (bits 15-13)
-    word |= (destMode & 0x3) << 11;     // Dest mode (bits 12-11)
-    word |= (ins->operands[1].reg & 0x7) << 8;            // Dest reg (bits 10-8)
-    word |= (ins->inst->funct & 0x1F) << 3;        // Funct (bits 7-3)
-    word |= (ARE & 0x7);
+   
+/*TO DO MAKE SURE TO GIVE REG=0 IN CASE THERE WASNT AND NOT -1*/
+    word |= (ins->opcode & 0xF) << 8;     
+    word |= (ins->funct  & 0xF) << 4;    
+    word |= (srcMode     & 0x3) << 2;
+    word |= (destMode    & 0x3);
 
-    // Store in the struct (only 24 bits)
-    ins->words[0].word = word & 0xFFFFFF; // Mask to 24 bits
+    
+    ins->words[0].word = word & 0xFFF; 
+     ins->words[0].are= 'A';
 }
 void buildLabelMW(Instruction *ins,int add,int i)
 {
