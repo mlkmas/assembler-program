@@ -31,7 +31,7 @@ void insertDir(Directive *dInst,Directive **directives, int *err, size_t *dirCap
         capacity*= 2;
         if (!resizeTable((void **) directives, capacity, sizeof(Directive)))
         {
-            handleError(ERR_MEM_ALLOC);
+            handleError(ERR_MEM_ALLOC,0,"");
             return;
         }
         (*dirCapacity)=capacity;
@@ -39,7 +39,7 @@ void insertDir(Directive *dInst,Directive **directives, int *err, size_t *dirCap
     Directive *newDir = malloc(sizeof(Directive));
     if (!newDir)
     {
-        handleError(ERR_MEM_ALLOC);
+        handleError(ERR_MEM_ALLOC,0,"");
         return;
     }
     newDir->nums = dInst->nums;
@@ -50,7 +50,7 @@ void insertDir(Directive *dInst,Directive **directives, int *err, size_t *dirCap
         newDir->str = malloc(strlen(dInst->str) + 1);
         if (!newDir->str) {
             free(newDir);
-            handleError(ERR_MEM_ALLOC);
+            handleError(ERR_MEM_ALLOC,0,"");
             return;
         }
         strcpy(newDir->str, dInst->str);
@@ -71,7 +71,7 @@ int validSymbol(Symbol *symbol, Symbol symbolTable[], int symbolCount)
     {
         if(!isalnum(symbol->name[i]))
         {
-            handleError(ERR_INVALID_SYM_NAME);
+            handleError(ERR_INVALID_SYM_NAME,0,"");
             return 0;
         }
     }
@@ -79,14 +79,14 @@ int validSymbol(Symbol *symbol, Symbol symbolTable[], int symbolCount)
     {
         if (strcmp(symbolTable[i].name, symbol->name) == 0)
         {
-            handleError(ERR_DUPLICATE_SYMBOL);
+            handleError(ERR_DUPLICATE_SYMBOL,0,"");
             return 0;
         }
     }
 
     if(isInstruction(symbol->name)==1 )
     {
-        handleError(ERR_INVALID_INSTRUCTION_NAME);
+        handleError(ERR_INVALID_INSTRUCTION_NAME,0,"");
         return 0;
     }
     return 1;
@@ -115,7 +115,7 @@ void extractSymbol(char *line, Symbol *symbol, int isData)
             symbol->name[sizeof(symbol->name) - 1] = '\0';
         } else
         {
-            handleError(ERR_INVALID_SYM_FORMAT);
+            handleError(ERR_INVALID_SYM_FORMAT,0,"");
 
         }
     } else if (isData == 3)
@@ -129,7 +129,7 @@ void extractSymbol(char *line, Symbol *symbol, int isData)
             symbol->name[sizeof(symbol->name) - 1] = '\0';
         } else {
             // Handle error: no second word found
-            handleError(ERR_INVALID_DATA_FORMAT);
+            handleError(ERR_INVALID_DATA_FORMAT,0,"");
 
         }
     }
@@ -155,7 +155,7 @@ void processDataOrStr(int res,Directive *directiveInst,char *line,int *err)
     {
         if(extractNums(lineCopy,directiveInst,err)==0)
         {
-            handleError(err);
+            handleError(err,0,"");
         }
        directiveInst->str=NULL;
         directiveInst->isData=1;
@@ -435,7 +435,7 @@ int parseInstruction(char *line, Instruction *instruc, int IC, int *err, int sym
 
                 } else if(token[0]=='&')/*handle relative label*/
                       {
-                          instruc->mode[opCount].mode=MODE_RELATIVE;
+                          instruc->mode[opCount]=MODE_RELATIVE;
                           instruc->reg[opCount]=-1;
                           /*TO DO CHECK LABEL NAME SIZE */
                           strncpy(instruc->labelName[opCount], token + 1, 30);
