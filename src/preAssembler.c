@@ -262,3 +262,18 @@ void freeNode(Node *node)
     
     free(node);
 }
+int addMcro(Node **head, const char *name, const char *body)
+{
+    Node *newNode = (Node*)malloc(sizeof(Node));
+    if(!newNode)
+    {
+        return 0;
+    }
+    strncpy(newNode->key, name, MAX_LABEL_LENGTH-1);
+    newNode->key[MAX_LABEL_LENGTH-1] = '\0';
+    strncpy(newNode->value, body, MAX_VALUE_LEN-1);
+    newNode->value[MAX_VALUE_LEN-1] = '\0';
+    newNode->next = *head;   /* insert at front of list */
+    *head = newNode;
+    return 1;
+}
