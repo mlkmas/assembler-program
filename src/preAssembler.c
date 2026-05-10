@@ -188,6 +188,9 @@ int handleMcro(char *fileName, Node **head)
 
     }
 
+fclose(fp);
+    fclose(finalFile);
+    return status;
 }
 //gets a !NULL list, return the node with the same key, else returns NULL
 Node *searchMcro(Node *head, const char *name)
