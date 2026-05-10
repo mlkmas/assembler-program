@@ -221,19 +221,21 @@ int printExtEntTable(MachineWord *words,int len, char *extension,char *fileName)
     }
     return 1;
 }
-MachineWord* createEntWords(extEntTable *ents, int totalWords)
+MachineWord* createEntWords(extEntTable *ents, int totalWords,Symbol *symTable, int symCount)
 {
-    int i;
+    int i,idx;
     /* Allocate the codeWords array */
     MachineWord *entWords = (MachineWord*)malloc(totalWords * sizeof(MachineWord));
     if (!entWords)
-    {//err
+    {
         return NULL;  /* Allocation failed */
     }
     for(i=0;i<totalWords;i++)
     {
+        idx=searchSymByName(symTable,symCount, ents[i].name);
         strcpy(entWords[i].name,ents[i].name);
-        entWords[i].word=ents[i].line;
+        entWords[i].word=(idx!= -1)? symTable[idx].value:0;
+        entWords[i].are='A';
 
     }
     return entWords;
