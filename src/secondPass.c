@@ -16,7 +16,7 @@ int secondPartExec(char *file_name, Symbol *symbolTable , int IC, int DC, int sy
         codeWords= createCodeWords(instrcs,instrcsCount,L);
         if (!codeWords)
         {
-            handleError(ERR_MEM_ALLOC);
+            handleError(ERR_MEM_ALLOC,0,"");
             return 0;
         }
 
@@ -66,7 +66,7 @@ if(createEntWords(entries,entriesCounter)==0)
     if (!fp)
     {
         free(obFileName);
-        handleError(ERR_OPENING_FILE);
+        handleError(ERR_OPENING_FILE,0,"");
         return 0;
     }
         fprintf(fp, "%d %d\n", codeLen, dataLen);
