@@ -32,7 +32,7 @@ void processFile(const char* inputFilename, const char* outputFilename)
 int preExec(char fileName[])
 {
     Node *head=NULL;
-    const char newFileName[MAX_FILE_NAME];
+     char newFileName[MAX_FILE_NAME];
     generateOutputFilename(fileName,newFileName,".clean");
     processFile(fileName,newFileName);
     if(newFileName ==NULL ||newFileName[0]=='\0')
@@ -50,7 +50,8 @@ int preExec(char fileName[])
 int handleMcro(char *fileName, Node **head)
 {
     int lineCounter,status,mcroDef;
-    FILE *fp, *finalFile,*outputFileName;
+    FILE *fp, *finalFile;
+    char outputFileName[MAX_FILE_NAME];
     char str[MAX_LINE_LENGTH], *token, *mcroName, *macroBody;
     fpos_t pos;
     status=1,lineCounter=0,mcroDef=0;
