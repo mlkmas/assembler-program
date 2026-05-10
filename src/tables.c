@@ -613,3 +613,40 @@ void updateDataSymbols(Symbol *symbolTable,int symbolCount,int ICF)
            
     }
 }
+
+void buildExtraWords(Instruction *ins)
+{
+    int wordIdx = 1;
+    int i;
+
+    /*both operands are registers that share one word */
+    if(ins->numOperand ==2&& ins->mode[0]== MODE_REGISTER && ins->mode[1] ==MODE_REGISTER)
+    {
+        ins->words[1].word=(1 << ins->reg[0])|(1 << ins->reg[1]);
+        ins->words[1].word &= 0xFFF;
+        ins->words[1].are= 'A';
+        ins->wordCount=2;
+        return;
+    }
+
+    for(i=0;i<ins->numOperand;i++)
+    {
+        if(ins->mode[i]==MODE_IMMEDIATE)
+        {
+            ins->words[wordIdx].word=ins->imm[i]& 0xFFF;
+            ins->words[wordIdx].are= 'A';
+        }
+        else if(ins->mode[i]==MODE_REGISTER)
+        {
+            ins->words[wordIdx].word=(1 << ins->reg[i]) & 0xFF;
+            ins->words[wordIdx].are='A';
+        }
+        else  /* MODE_DIRECT or MODE_RELATIVE placeholdr*/
+        {
+            ins->words[wordIdx].word= 0;
+            ins->words[wordIdx].are='A';   /* will be overwritten in secondpass */
+        }
+        wordIdx++;
+    }
+    ins->wordCount=wordIdx;
+}
