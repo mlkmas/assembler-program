@@ -43,7 +43,7 @@ void buildFirstWord(Instruction *ins,int *err);
 void buildLabelMW(Instruction *ins,int add,int i);
 void setDataMWord(MachineWord **mw, int *wordsCount, int *err, Directive *dir);
 void updateDataSymbols(Symbol *SymbolTable, int symbolCount,int ICF);
-
+void buildExtraWords(Instruction *ins);
 
 
 

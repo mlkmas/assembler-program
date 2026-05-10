@@ -102,7 +102,8 @@ int firstPartExe(char *fileName)
             continue;
         }
         buildFirstWord(&instruction,&errFlag);
-        L = instruction.wordCount;
+        buildExtraWords(&instruction);
+        L =instruction.wordCount;
         if(symbolFlag==1)
         {
             insertSymbol(&symbolTable,&symbol,&symbolCount,&symTableCap,IC);
