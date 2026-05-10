@@ -34,7 +34,8 @@ int secondPartExec(char *file_name, Symbol *symbolTable , int IC, int DC, int sy
             free(codeWords);
             return 0;
         }
-if(createEntWords(entries,entriesCounter)==0)
+        entryWords=createEntWords(entries,entriesCounter,symbolTable,symbolCount);
+if(entryWords==NULL)
 {
     //error
 }

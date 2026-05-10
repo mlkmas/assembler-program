@@ -12,7 +12,7 @@ void processFile(const char* inputFilename, const char* outputFilename)
     FILE *outputFile= fopen(outputFilename, "w");
     if(!inputFile||!outputFile)
     {
-        handleError(ERR_OPENING_FILE);
+        handleError(ERR_OPENING_FILE,0,"");
         return;
     }
     while (fgets(line,sizeof (line),inputFile))
@@ -37,7 +37,7 @@ int preExec(char fileName[])
     processFile(fileName,newFileName);
     if(newFileName ==NULL ||newFileName[0]=='\0')
     {
-        handleError(ERR_MEM_ALLOC);
+        handleError(ERR_MEM_ALLOC,0,"");
         return 0;
     }
     if(!handleMcro(newFileName,&head))

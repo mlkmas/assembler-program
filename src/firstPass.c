@@ -28,108 +28,91 @@ int firstPartExe(char *fileName)
         //throw error
         return -1;
     }
-    while (fgets(line, MAX_LINE_LENGTH, fp) != NULL)
+   while (fgets(line, MAX_LINE_LENGTH, fp) !=NULL)
+{
+    lineNum++;
+    if(isEmptyLine(line) ||isCommentLine(line))  
     {
-        lineNum++;
-        if (strcmp(line, "\n") == 0) {
+        continue;
+    }
+
+    /* Check for label first */
+    symbolFlag=-1;
+    extractSymbol(line,&symbol,0);
+    if(symbol.name[0] != '\0')
+    {
+        if(!validSymbol(&symbol,symbolTable,symbolCount))
+        {
+            errFlag=1;
+        } else
+        {
+            symbolFlag=1;
+        }
+    }
+
+    pos= strchr(line, '.');
+    if(pos)
+    {
+        char dirToken[MAX_LINE_LENGTH];                  
+        sscanf(pos, "%s", dirToken);
+        res = isDirective(dirToken);
+        switch (res)
+        {
+            case 1:
+            case 2:
+            {
+                processDataOrStr(res,&directiveInst,line,&err);
+                insertDir(&directiveInst, &directives, &err, &dirCapacity, &dirCount);
+                if(symbolFlag==1)
+                {
+                    insertSymbol(&symbolTable,&symbol,&symbolCount,&symTableCap,DC);
+                    symbolFlag=0;
+                }
+                DC+=directiveInst.len;
+                break;
+            }
+            case 4:
+            {
+                if(inserExternEntry(entries,&entriesCounter,symbol.name,&entCap,lineNum)==0)
+                {
+                    //err
+                }
+                entriesCounter++;
+                break;
+            }
+            case 3:
+            {
+                if(inserExternEntry(externs,&externsCounter,symbol.name,&exCap, lineNum)==0)
+                {
+                    //err
+                }
+                externsCounter++;
+                symbolFlag=0;
+                break;
+            }
+            default:
+                break;
+        }
+    }
+    else  /* it's an instruction — this branch was unreachable before */
+    {
+        if (parseInstruction(line, &instruction,IC,&errFlag,symbolFlag) == 0)
+        {
+            errFlag=1;
             continue;
         }
-        pos= strchr(line, '.');
-        if(pos)
+        buildFirstWord(&instruction,&errFlag);
+        L = instruction.wordCount;
+        if(symbolFlag==1)
         {
-            sscanf(pos, "%s", str);
-            res = isDirective(str);
-            extractSymbol(line,&symbol,res);
-            //TO DO:CHECK IF I NEED TO RESET SYMBOL EVERY TIME
-            if (symbol.name[0] == '\0' != 0 )
-            {
-                if(!validSymbol(&symbol,symbolTable,symbolCount))
-                {
-                    //TO DO:   not a valid symbol throw error
-                } else
-                {
-                    symbolFlag=1;
-                }
-            }
-            switch (res)
-            {
-                case 1:
-                case 2:
-                {
-                    processDataOrStr(res,&directiveInst,line,&err);
-                    insertDir(&directiveInst, &directives, &err, &dirCapacity, &dirCount);
-                    if(symbolFlag==1)
-                    {
-                        insertSymbol(&symbolTable,&symbol,&symbolCount,&symTableCap,DC);
-
-                        symbolFlag=0;
-                    }
-                    //CHECK IF I ADDED +1 IN LEN FOR STRING
-                    DC+=directiveInst.len;
-                    break;
-                }
-                case 4:
-                {
-                    if(inserExternEntry(entries,&entriesCounter,symbol.name,&entCap,lineNum)==0)
-                    {
-                        //err
-                    }
-                    entriesCounter++;
-                    break;
-                }
-                case 3:
-                {
-                    //  its extern
-                    if(inserExternEntry(externs,&externsCounter,symbol.name,&exCap, lineNum)==0)
-                    {
-                        //err
-                    }
-                    externsCounter++;
-                    symbolFlag=0;
-                    break;
-                }
-                default:
-                {
-
-                        //TO DO: THIS WILL FILL THE INSTRUCTION DETAILS
-                        if (parseInstruction(line, &instruction,IC,&err,symbolFlag) == 0)
-                        {
-                            //the instruction has something illegal
-                            //ERROR
-                            continue;
-
-                        } else
-                        {
-
-                            L = instruction.wordCount;
-                            buildFirstWord(&instruction,&err);//TO DO
-                            if(instruction.wordCount>1)
-                            {
-                                buildFirstWord(&instruction,&err);//TO DO
-                            }
-                            insertInstruction(&instruction,&instrucs,&instCapactiy,&intrucsCounter);
-                            IC+=L;
-                        }
-
-                    if(symbolFlag==1)
-                    {
-                        insertSymbol(&symbolTable,&symbol,&symbolCount,&symTableCap,IC);
-                        symbolFlag=0;
-                    }
-
-
-
-                }
-            }
-
-
+            insertSymbol(&symbolTable,&symbol,&symbolCount,&symTableCap,IC);
+            symbolFlag=0;
         }
+        insertInstruction(&instruction,&instrucs,&instCapactiy,&intrucsCounter);
+        IC+=L;
     }
-    /*update symbols' table by adding ICF*/
-    for(i=0;i<symbolCount;i++)
-    {
-        symbolTable[i].lineNum+=IC;
-    }
+}
+    updateDataSymbols(symbolTable, symbolCount, IC);
     dataMWs= malloc(dirCount * sizeof(MachineWord));
     /*set data mwords*/
     for(i=0;i<dirCount;i++)
@@ -152,7 +135,7 @@ int inserExternEntry(extEntTable *table,int *count,char name[32],size_t *capacit
 {
   size_t newSize;
 
-  if(*capacity>=*count)
+ if(*count >=(int)*capacity)
   {
     newSize=(*capacity)*2;
      if( resizeTable((void **)table,newSize,sizeof (extEntTable))==0)
