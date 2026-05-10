@@ -256,7 +256,6 @@ void freeList(Node *head)
 }
 void freeNode(Node *node)
 {
-    free(node->key);
-    free(node->value);
+    
     free(node);
 }
