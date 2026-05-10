@@ -47,11 +47,11 @@ if(entryWords==NULL)
         if(entriesCounter!=0)
         {
             //TO DO FILL ENTRY WORDS FIRST
-            printExtEntTable(entryWords,entriesCounter,"ent",file_name);
+            printExtEntTable(entryWords,entriesCounter,".ent",file_name);
         }
         if(externsCounter!=0)
         {
-            printExtEntTable(externsWords,exWordsCounter,"ext",file_name);
+            printExtEntTable(externsWords,exWordsCounter,".ext",file_name);
         }
 
         free(codeWords);
@@ -62,7 +62,7 @@ if(entryWords==NULL)
     {
     int i;
     char *obFileName;
-    obFileName= addFile(filename,"ob");
+    obFileName= addFile(filename,OBJ_EXT);
     FILE *fp = fopen(obFileName, "w");
     if (!fp)
     {
@@ -73,13 +73,13 @@ if(entryWords==NULL)
         fprintf(fp, "%d %d\n", codeLen, dataLen);
         for (i = 0; i < codeLen; i++)
         {
-            fprintf(fp, "%06X %06X\n", 100 + i, codeWords[i].word & 0xFFFFFF);
+            fprintf(fp, "%04d %03X\n", 100 + i, codeWords[i].word & 0xFFF);
         }
 
         /* Data section (continues after code section) */
         for (i = 0; i < dataLen; i++)
         {
-            fprintf(fp, "%06X %06X\n", 100 + codeLen + i, dataWords[i].word & 0xFFFFFF);
+            fprintf(fp, "%04d %03X\n", 100 + codeLen + i, dataWords[i].word & 0xFFF);
         }
 
         fclose(fp);
@@ -115,37 +115,73 @@ int searchSymbolInotherTables(Symbol *symbol,extEntTable *table,int count)
 }
 int setInstLabelsMw(Symbol *symTable,int symCount,int *err,Instruction *instrucs,int insCount,MachineWord **externWords,int *externsCount,size_t *externCap)
 {
-    int index,i,j,externIndex;
+    int index,i,j,wordSlot,dist,extraWordAddr;
     for(i=0;i<insCount;i++)
     {
-        for(j=0;j<instrucs[i].wordCount;j++)
+        wordSlot=1;
+        for(j=0;j<instrucs[i].numOperand;j++)
         {
-            if(instrucs[i].mode[j]==1 || instrucs[i].mode[j]==2 )
+            if(instrucs[i].mode[j]==MODE_REGISTER)
             {
-                index=searchSymByName(symTable,symCount,instrucs[i].labelName[j]);
-                if(index==-1)
+            
+               if(instrucs[i].numOperand==2&&instrucs[i].mode[0]==MODE_REGISTER &&instrucs[i].mode[1]==MODE_REGISTER)
                 {
-                   // err=undefinedLabel;
-                    return 0;
-                } else{
-                    buildLabelMW(&instrucs[i],symTable[index].lineNum,j);
-                   if(symTable[index].isExternal==1)
-                   {
-                      if(  insertExternWord(externsCount,externCap,externWords,err,instrucs[i].address+j,symTable[index].name)==0)
-                      {
-                          //err
-                          return 0;
-                      }
-                   }
+                    if(j==0)
+                    {wordSlot++;
+                    } 
+                }
+                else
+                {
+                    wordSlot++;
+                }
+                continue;
+            }
+            if(instrucs[i].mode[j]==MODE_IMMEDIATE)
+            {
+                wordSlot++; 
+                continue;
+            }
+            index=searchSymByName(symTable,symCount,instrucs[i].labelName[j]);
+            if(index==-1)
+            {
+                *err = 1;
+                /*TO DO CHECK IF HANDELING ERROR NEED INSTEAD OF PRINTING ERROR*/
+                fprintf(stderr,"Error: undefined label '%s'\n", instrucs[i].labelName[j]);
+                wordSlot++;
+                continue;
+            }
+             extraWordAddr= instrucs[i].address+wordSlot;
 
+            if(instrucs[i].mode[j]==MODE_RELATIVE)
+            {
+                dist=symTable[index].value-instrucs[i].address;
+                instrucs[i].words[wordSlot].word= dist& 0xFFF;
+                instrucs[i].words[wordSlot].are='A';
+            }
+            else  
+            {
+                if(symTable[index].isExternal==1)
+                {
+                    instrucs[i].words[wordSlot].word=0;
+                    instrucs[i].words[wordSlot].are= 'E';
+                    if(insertExternWord(externsCount, externCap, externWords, err,extraWordAddr, symTable[index].name) == 0)
+                    {
+                        return 0;
+                    }
+                }
+                else
+                {
+                    instrucs[i].words[wordSlot].word= symTable[index].value & 0xFFF;
+                    instrucs[i].words[wordSlot].are='R';
                 }
             }
+            wordSlot++;
         }
-
     }
     return 1;
-
 }
+
+
 
 int searchSymByName(Symbol *symTable,int symCount,char *name)
 {

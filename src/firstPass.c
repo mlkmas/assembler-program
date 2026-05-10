@@ -5,6 +5,8 @@
 #include <string.h>
 
 #include "../include/tables.h"
+#include "../include/errors.h"
+
 int firstPartExe(char *fileName)
 {
     int IC, DC, res, L,i, symbolCount = 0,dirCount=0,errFlag=0,err=-1,symbolFlag=-1,externsCounter=0,intrucsCounter=0,
@@ -31,6 +33,14 @@ int firstPartExe(char *fileName)
    while (fgets(line, MAX_LINE_LENGTH, fp) !=NULL)
 {
     lineNum++;
+    if(strlen(line) > 80 && line[80] != '\n' && line[80] != '\0')
+{
+    handleError(ERR_INVALID_ARGUMENT, lineNum, fileName);  /* or add ERR_LINE_TOO_LONG */
+    errFlag = 1;
+   
+    while(line[strlen(line)-1] != '\n' &&fgets(line, MAX_LINE_LENGTH,fp)!= NULL);
+    continue;
+}
     if(isEmptyLine(line) ||isCommentLine(line))  
     {
         continue;
@@ -114,7 +124,7 @@ int firstPartExe(char *fileName)
     }
 }
     updateDataSymbols(symbolTable, symbolCount, IC);
-    dataMWs= malloc(dirCount * sizeof(MachineWord));
+    dataMWs= malloc(DC * sizeof(MachineWord));
     /*set data mwords*/
     for(i=0;i<dirCount;i++)
     {

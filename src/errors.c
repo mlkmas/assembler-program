@@ -16,7 +16,7 @@ static const char *errorMessages[ERR_COUNT] = {
         "Invalid .data format",
          "Duplicate symbol definition",
         "Reserved word used as symbol name",
-    
+      
         "Line exceeds 80 characters",
         "Unknown error"
 };
