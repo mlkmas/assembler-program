@@ -119,9 +119,9 @@ int setInstLabelsMw(Symbol *symTable,int symCount,int *err,Instruction *instrucs
     {
         for(j=0;j<instrucs[i].wordCount;j++)
         {
-            if(instrucs[i].operands[j].mode==1 || instrucs[i].operands[j].mode==2 )
+            if(instrucs[i].mode[j]==1 || instrucs[i].mode[j]==2 )
             {
-                index=searchSymByName(symTable,symCount,instrucs[i].operands[j].labelName);
+                index=searchSymByName(symTable,symCount,instrucs[i].labelName[j]);
                 if(index==-1)
                 {
                    // err=undefinedLabel;
