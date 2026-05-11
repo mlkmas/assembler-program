@@ -17,7 +17,7 @@ void processFile(const char* inputFilename, const char* outputFilename)
     }
     while (fgets(line,sizeof (line),inputFile))
     {
-        line[strcspn(line,"\n")]='\0';
+        line[strcspn(line,"\r\n")]='\0';
         if(isEmptyLine(line)||isCommentLine(line))
         {
             continue;
