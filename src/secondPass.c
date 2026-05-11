@@ -63,12 +63,13 @@ if(entryWords==NULL)
     int writeMWordsToHexObFile(const char *filename, MachineWord *codeWords, int codeLen,MachineWord *dataWords,int dataLen)
     {
     int i;
-    char *obFileName;
-    obFileName= addFile(filename,OBJ_EXT);
-    FILE *fp = fopen(obFileName, "w");
+    char obFileName[MAX_FILE_NAME];
+    FILE *fp;
+    generateOutputFilename(filename,obFileName,OBJ_EXT);
+    fp = fopen(obFileName, "w");
     if (!fp)
     {
-        free(obFileName);
+        
         handleError(ERR_OPENING_FILE,0,"");
         return 0;
     }
@@ -85,7 +86,7 @@ if(entryWords==NULL)
         }
 
         fclose(fp);
-        free(obFileName);
+       
         return 1;
 }
 int checkSymbolTables(Symbol *symbolTable,extEntTable *externs,extEntTable *entries,int entriesCounter,int externsCounter,int symbolCount,int *err)
@@ -251,8 +252,9 @@ int printExtEntTable(MachineWord *words,int len, char *extension,char *fileName)
 {
     int i;
     char *newFileName;
-    newFileName= addFile(fileName,extension);
-    FILE *fp = fopen(newFileName, "w");
+     FILE *fp;
+    generateOutputFilename(fileName,newFileName,extension);
+    fp = fopen(newFileName, "w");
     if (!fp)
     {
         handleError(ERR_OPENING_FILE,0,fileName);

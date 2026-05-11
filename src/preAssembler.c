@@ -70,6 +70,7 @@ int handleMcro(char *fileName, Node **head)
     }
     while (fgets(str,MAX_LINE_LENGTH,fp))
     {
+        str[strcspn(str, "\r\n")] = '\0';
         lineCounter++;
         token=strtok(str," \t\n");
 
@@ -105,6 +106,7 @@ int handleMcro(char *fileName, Node **head)
                 macroBody[0]='\0';
                 while (fgets(str,MAX_LINE_LENGTH,fp))
                 {
+                    str[strcspn(str, "\r\n")] = '\0';
                     lineCounter++;
                     token= strtok(str," \t\n");
                     if(token && strcmp(token, "mcroend")==0)

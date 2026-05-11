@@ -33,6 +33,7 @@ int firstPartExe(char *fileName)
    while (fgets(line, MAX_LINE_LENGTH, fp) !=NULL)
 {
     lineNum++;
+    line[strcspn(line, "\r\n")] = '\0';
     if(strlen(line) > 80 && line[80] != '\n' && line[80] != '\0')
 {
     handleError(ERR_INVALID_ARGUMENT, lineNum, fileName);  /* or add ERR_LINE_TOO_LONG */
