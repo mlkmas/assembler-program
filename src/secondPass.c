@@ -29,7 +29,7 @@ int secondPartExec(char *file_name, Symbol *symbolTable , int IC, int DC, int sy
         }
 
         /*sets the labels machine words */
-        if(setInstLabelsMw(symbolTable,symbolCount,&err,instrcs,instrcsCount,&externsWords,&externsCounter,&exWordsCap)==0)//TO DO
+        if(setInstLabelsMw(symbolTable,symbolCount,&err,instrcs,instrcsCount,&externsWords,&externsCounter,&exWordsCap)==0)/* TO DO  */
         {
             free(codeWords);
             return 0;

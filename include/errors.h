@@ -31,4 +31,4 @@ void handleError(ErrorCode code,int lineNum, const char *fileName);
 void sysError(ErrorCode code);
 
 
-#endif //UNTITLED6_ERRORS_H
+#endif /* UNTITLED6_ERRORS_H  */

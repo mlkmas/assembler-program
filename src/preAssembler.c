@@ -193,7 +193,7 @@ fclose(fp);
     fclose(finalFile);
     return status;
 }
-//gets a !NULL list, return the node with the same key, else returns NULL
+/* gets a !NULL list, return the node with the same key, else returns NULL  */
 Node *searchMcro(Node *head, const char *name)
 {
     while(head!=NULL)
@@ -215,7 +215,7 @@ int validMcroName(const char* name,Node *head)
     {
         if(!isalnum(name[i]))
         {
-            //error
+            /* error  */
             return 0;
         }
     }
@@ -225,25 +225,25 @@ Node *current=head;
     {
         if(strcmp(current->key,name)==0)
         {
-            //error mcro name is declared before
+            /* error mcro name is declared before  */
             return 0;
         }
         current=current->next;
     }
 if(isInstruction(name))
 {
-    //error its an isntruction name
-    //free+close+break
+    /* error its an isntruction name  */
+    /* free+close+break  */
     return 0;
 }
 if(isDirective(name) != 0)
 {
-    //error
+    /* error  */
     return 0;
 }
 if(isReg(name))
 {
-    //error
+    /* error  */
     return 0;
 }
 

@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
            amFile=addFile(argv[i],AM_EXT);
            if(firstPartExe(amFile))
            {
-               //TO DO: IF SECOND PART SUCCEEDED GENERTAE OUT FILES
+               /* TO DO: IF SECOND PART SUCCEEDED GENERTAE OUT FILES  */
                /*
                if(secondPartExe(amFile))
                {

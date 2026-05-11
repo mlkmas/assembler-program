@@ -42,4 +42,4 @@ MachineWord* createCodeWords(Instruction *instrcs, int instrcsCount, int totalWo
 int printExtEntTable(MachineWord *words,int len, char *extension,char *fileName);
 MachineWord* createEntWords(extEntTable *ents, int totalWords,Symbol *symTable, int symCount);
 
-#endif //UNTITLED6_SECONDPASS_H
+#endif /* UNTITLED6_SECONDPASS_H  */

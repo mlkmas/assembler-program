@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include "../include/tables.h"
 #include "../include/errors.h"
-void insertSymbol(Symbol **symbolTable, Symbol *symbol, int *symbolCount,size_t *symbolSize,int DC) // ones digit is for entr, tens for ectern
+void insertSymbol(Symbol **symbolTable, Symbol *symbol, int *symbolCount,size_t *symbolSize,int DC) /* ones digit is for entr, tens for ectern  */
 {
     size_t capacity=(*symbolSize);
     if ((size_t)(*symbolCount) >= capacity)
@@ -128,7 +128,7 @@ void extractSymbol(char *line, Symbol *symbol, int isData)
             strncpy(symbol->name, token, sizeof(symbol->name));
             symbol->name[sizeof(symbol->name) - 1] = '\0';
         } else {
-            // Handle error: no second word found
+            /* Handle error: no second word found  */
             handleError(ERR_INVALID_DATA_FORMAT,0,"");
 
         }
@@ -164,7 +164,7 @@ void processDataOrStr(int res,Directive *directiveInst,char *line,int *err)
     {
         if(extractStr(lineCopy,directiveInst,err)==0)
         {
-            //error
+            /* error  */
             return;
         }
         directiveInst->nums=NULL;
@@ -178,7 +178,7 @@ int extractNums(char *lineCopy, Directive *dir,int *err)
 {
     char line[256];
     strncpy(line, lineCopy, sizeof(line));
-    int c,i,numIndex,sign,currNum,flag; //the flag is 0 in case it shouldnt be a ,
+    int c,i,numIndex,sign,currNum,flag; /* the flag is 0 in case it shouldnt be a ,  */
     numIndex = 0;
      sign = 1;
     c= countNums(line);
@@ -368,7 +368,7 @@ int parseInstruction(char *line, Instruction *instruc, int IC, int *err, int sym
     instruc->address=IC;
     instruc->wordCount=1;
 
-    comma=0;//comma=0- a comma cant appear here, comma=1- comma should appear
+    comma=0;/* comma=0- a comma cant appear here, comma=1- comma should appear  */
     opCount=0;
     instruc->labelName[0][0]='\0';
     while ((token = strtok(NULL, " \t\n")) != NULL)
@@ -597,13 +597,13 @@ void setDataMWord(MachineWord **mw, int *wordsCount, int *err, Directive *dir)
         /*Process .data directive*/
         for (i = 0; i < dir->len; i++)
         {
-            (*mw)[*wordsCount + i].word = dir->nums[i] & 0xFFFFFF;  // Ensure only 24 bits are stored
+            (*mw)[*wordsCount + i].word = dir->nums[i] & 0xFFFFFF;  /* Ensure only 24 bits are stored  */
         }
     } else {
         /*Process .string directive*/
         for (i = 0; i < dir->len; i++)
         {
-            (*mw)[*wordsCount + i].word = (uint8_t)dir->str[i]; // Each char becomes 24-bit word (lower 8 bits used)
+            (*mw)[*wordsCount + i].word = (uint8_t)dir->str[i]; /* Each char becomes 24-bit word (lower 8 bits used)  */
         }
     }
 

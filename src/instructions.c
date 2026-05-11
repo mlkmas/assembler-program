@@ -2,7 +2,7 @@
 #include <string.h>
 
 
-// Define the register names and their corresponding values
+/* Define the register names and their corresponding values  */
 
 const RegMap regTable[] = {
         {"r0", 0},

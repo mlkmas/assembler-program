@@ -72,4 +72,4 @@ int addMcro(Node **head, const char *name, const char *body);
 Node *searchMcro(Node *head, const char *name);
 
 
-#endif //UNTITLED6_PREASSEMBLER_H
+#endif /* UNTITLED6_PREASSEMBLER_H  */
