@@ -25,7 +25,7 @@ typedef struct
 } Directive;
 
 typedef struct {
-    const char name[6]; /*instruction name ex: add sub ...*/
+     char name[6]; /*instruction name ex: add sub ...*/
     int opcode;
     int numOperands; /*1-2*/
     int funct;

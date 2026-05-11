@@ -1,6 +1,7 @@
 #include <ctype.h>
 #include <string.h>
 #include <stdlib.h>
+#include <limits.h>  
 #include "../include/tables.h"
 #include "../include/errors.h"
 void insertSymbol(Symbol **symbolTable, Symbol *symbol, int *symbolCount,size_t *symbolSize,int DC) /* ones digit is for entr, tens for ectern  */
