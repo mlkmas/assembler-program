@@ -1,4 +1,5 @@
 #include "../include/utils.h"
+#include "../include/errors.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -11,8 +12,7 @@ void* handleMalloc(int size)
     void* tmp= malloc(size);
     if(tmp==NULL)
     {
-        //TO DO
-        //throw error allocating memory
+        sysError(ERR_MEM_ALLOC);
     }
     return tmp;
 }
@@ -34,7 +34,7 @@ char* addFile(const char *fileName, const char *extenstion)
 
 void removeWhitespace(char* line)
 {
-    int i = 0, j = 0, inToken = 0; // Flag to track if we're inside a token
+    int i = 0, j = 0, inToken = 0; /*Flag to track if we're inside a token*/
 
     while (line[i])
     {
