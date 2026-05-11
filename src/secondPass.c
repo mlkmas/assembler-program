@@ -251,7 +251,7 @@ MachineWord* createCodeWords(Instruction *instrcs, int instrcsCount, int totalWo
 int printExtEntTable(MachineWord *words,int len, char *extension,char *fileName)
 {
     int i;
-    char *newFileName;
+    char newFileName[MAX_FILE_NAME];  
      FILE *fp;
     generateOutputFilename(fileName,newFileName,extension);
     fp = fopen(newFileName, "w");
@@ -264,6 +264,7 @@ int printExtEntTable(MachineWord *words,int len, char *extension,char *fileName)
     {
         fprintf(fp, "%s %06X\n", words[i].name, words[i].word & 0xFFFFFF);
     }
+    fclose(fp); 
     return 1;
 }
 MachineWord* createEntWords(extEntTable *ents, int totalWords,Symbol *symTable, int symCount)
