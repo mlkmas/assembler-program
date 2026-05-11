@@ -227,6 +227,7 @@ void buildExternMW(MachineWord **externWords,int add,int i)
 MachineWord* createCodeWords(Instruction *instrcs, int instrcsCount, int totalWords)
 {
     int i, j;
+    int wordIndex;
 
 
     /* Allocate the codeWords array */
@@ -238,7 +239,7 @@ MachineWord* createCodeWords(Instruction *instrcs, int instrcsCount, int totalWo
     }
 
     /* Copy words from each instruction */
-    int wordIndex=0;
+    wordIndex=0;
     for (i = 0; i < instrcsCount; i++)
     {
         for (j = 0; j < instrcs[i].wordCount; j++)
