@@ -186,13 +186,13 @@ int extractNums(char *lineCopy, Directive *dir,int *err)
     if(c==0)
     {
         dir->nums= NULL;
-        //error empty .data line
+        handleError(ERR_INVALID_DATA_FORMAT,0,"");
         return 0;
     }
     dir->nums =(int *)malloc(c * sizeof(int));
     if (dir->nums == NULL)
     {
-        //error malloc
+        handleError(ERR_MEM_ALLOC,0,"");
         return 0;
     }
     i=0;
@@ -219,7 +219,7 @@ int extractNums(char *lineCopy, Directive *dir,int *err)
             }
             dir->nums[numIndex++] = currNum * sign;
             flag=1;
-        } else { //its not a digit
+        } else { /*its not a digit*/
             if(line[i]==',' && flag==1)
             {
                 flag=0;
@@ -229,7 +229,7 @@ int extractNums(char *lineCopy, Directive *dir,int *err)
                 {
                 i++;
                 } else{
-                //TO DO ERROR SYNTAX IN DATA
+                handleError(ERR_INVALID_DATA_FORMAT, 0, "");
                 return 0;
             }
 
@@ -244,11 +244,11 @@ int countNums(const char *line)
     int i = 0;
     while (line[i] != '\0')
     {
-        // Skip leading non-digit characters (including spaces, commas, '.')
+        /*Skip leading non-digit characters (including spaces, commas, '.')*/
         if (isdigit(line[i]) || (line[i] == '-' && isdigit(line[i + 1])))
         {
             c++;
-            // Skip the rest of the current number
+            /*Skip the rest of the current number */
             while (isdigit(line[i]) || line[i] == '-')
             {
                 i++;
@@ -271,37 +271,36 @@ int extractStr(char *lineCopy, Directive *dir,int *err)
     token = strtok(line, " ");
     if( strchr(token, ':') != NULL)
     {
-        //its a label name, skip
+        /*its a label name, skip*/
         token = strtok(line, " ");
         if(strcmp(token, ".string") != 0)
         {
-            //error in the syntax
+            handleError(ERR_INVALID_ARGUMENT,0, "");
             return 0;
         }
 
     } else {
         if(strcmp(token, ".string") != 0)
         {
-            //error in the syntax
+            handleError(ERR_INVALID_ARGUMENT,0, "");
             return 0;
         }
 
     }
-    token = strtok(NULL, "");//get the rest of the line
+    token = strtok(NULL, "");/*get the rest of the line*/
       for ( i = 0; token[i] != '\0'; i++)
       {
           if(token[i]=='"')
               break;
           if(token[i]!=' ')
           {
-              //error in syntax before an " openeing
+             handleError(ERR_INVALID_ARGUMENT, 0, "");
               return 0;
           }
       }
       if(token[i]=='\0')
       {
-          //didnt find the opening "
-          //error
+          handleError(ERR_INVALID_ARGUMENT, 0, "");
           return 0;
       }
       i++;
@@ -314,8 +313,7 @@ int extractStr(char *lineCopy, Directive *dir,int *err)
     }
     if(token[i]=='\0')
     {
-        //didnt find the closing "
-        //error
+         handleError(ERR_INVALID_ARGUMENT, 0, "");
         return 0;
     }
     i++;
@@ -324,7 +322,8 @@ int extractStr(char *lineCopy, Directive *dir,int *err)
     {
         if(token[i]!=' ' && token[i]!='\t' && token[i]!='\n')
         {
-            //error trailing letters
+            /*error trailing letters*/
+            handleError(ERR_INVALID_ARGUMENT, 0, "");
             dir->len=0;
             return 0;
         }
@@ -332,11 +331,11 @@ int extractStr(char *lineCopy, Directive *dir,int *err)
     dir->str=(char*)malloc(sizeof(char) * (dir->len + 1));
     if(dir->str ==NULL)
     {
-        //error allocating memory
+        handleError(ERR_MEM_ALLOC, 0, "");
         return 0;
     }
     strncpy(dir->str, line + start, dir->len);
-    dir->str[dir->len] = '\0'; // Null-terminate the new string
+    dir->str[dir->len] = '\0'; /*Null-terminate the new string*/
     return 1;
 }
 
@@ -358,6 +357,7 @@ int parseInstruction(char *line, Instruction *instruc, int IC, int *err, int sym
     if(token == NULL || getInstructionOp(&op, token) == 0)
     {
         /*it didnt find a suitable instruction,TO DO: handle error*/
+        handleError(ERR_INVALID_INSTRUCTION_NAME, 0, "");
         return 0;
     }
     
@@ -376,6 +376,8 @@ int parseInstruction(char *line, Instruction *instruc, int IC, int *err, int sym
         if(opCount>=instruc->numOperand)
         {
             /*error an additional op*/
+            handleError(ERR_INVALID_ARGUMENT, 0, "");
+            *err=1;
             return 0;
         }
 
@@ -384,10 +386,12 @@ int parseInstruction(char *line, Instruction *instruc, int IC, int *err, int sym
             if(comma==0)
             {
                 /*error an additional comma*/
+                handleError(ERR_INVALID_ARGUMENT, 0, "");  
+                *err = 1;
                 return 0;
             }
             comma=0;
-            continue;//get the next token
+            continue;/*get the next token*/
         }
         /*check for comma at start */
             if(token[0]==',')
@@ -395,15 +399,19 @@ int parseInstruction(char *line, Instruction *instruc, int IC, int *err, int sym
                 if(comma==0)
                 {
                     /*error comma*/
+                    handleError(ERR_INVALID_ARGUMENT, 0, "");  
+                    *err = 1;
                     return 0;
                 }
                 /*Remove comma from start*/
                 memmove(token, token+1, strlen(token));
                 comma= 1;
-            } // Case 3: Token doesn't start with comma but we expected one
+            } /*Case 3: Token doesn't start with comma but we expected one*/
             else if (comma == 1)
             {
                /**err = ERR_MISSING_COMMA; */
+                handleError(ERR_INVALID_ARGUMENT, 0, "");  
+                *err = 1;
                 return 0;
             }
         /*Check for trailing comma */
@@ -423,10 +431,10 @@ int parseInstruction(char *line, Instruction *instruc, int IC, int *err, int sym
                 {
                     /*its an immediate value*/
                     instruc->mode[opCount]=MODE_IMMEDIATE;
-                    //extract num after /make sure there is one#
+                    /*extract num after /make sure there is one# */
                     if (extractNum(&instruc->imm[opCount],token + 1) == 0)
                     {
-                       // *err = ERR_INVALID_IMMEDIATE;
+                       /* *err = ERR_INVALID_IMMEDIATE; */
                         return 0;
                     }
                     
@@ -449,7 +457,7 @@ int parseInstruction(char *line, Instruction *instruc, int IC, int *err, int sym
                     {
                         /*its not a reg then its a label*/
                         instruc->mode[opCount]=MODE_DIRECT;
-                        //TO DO : CHECK THAT TOKEN IS <31
+                        /*TO DO : CHECK THAT TOKEN IS <31 */
                         strncpy(instruc->labelName[opCount], token, 30);
                         instruc->labelName[opCount][30] = '\0';
                         instruc->wordCount++;
@@ -483,21 +491,21 @@ int extractNum(int *num, const char *str)
     char *endptr;
     long value;
 
-    // Check for empty string
+    /*Check for empty string*/
     if (*str == '\0')
     {
         return 0;
     }
-    // Convert string to number
+    /*Convert string to number*/
     value = strtol(str, &endptr, 10);
 
-    // Check for conversion errors
+    /*Check for conversion errors*/
     if (endptr == str)
-    {  // No digits were converted
+    {  /*No digits were converted*/
         return 0;
     }
 
-    // Check for trailing non-whitespace characters
+    /*Check for trailing non-whitespace characters*/
     while (*endptr != '\0') {
         if (!isspace((unsigned char)*endptr))
         {
@@ -505,7 +513,7 @@ int extractNum(int *num, const char *str)
         }
         endptr++;
     }
-    // Check for overflow/underflow
+    /*Check for overflow/underflow*/
     if (value > INT_MAX || value < INT_MIN) {
         return 0;
     }
@@ -521,7 +529,8 @@ int insertInstruction(Instruction *instruction,Instruction **instrucs,size_t *in
 
         if (!resizeTable((void **) instrucs, capacity, sizeof(Instruction*)))
         {
-            //TO DO ERROR RESIZING
+            
+            handleError(ERR_MEM_ALLOC, 0, "");
             return 0;
         }
         (*instCapactiy)=capacity;
@@ -529,14 +538,16 @@ int insertInstruction(Instruction *instruction,Instruction **instrucs,size_t *in
     Instruction *newInst = malloc(sizeof(Instruction));
     if (!newInst)
     {
-        // Handle memory allocation failure
+        /*Handle memory allocation failure*/
+        handleError(ERR_MEM_ALLOC, 0, "");
         return 0;
     }
 
-    // Copy the instruction data
+    /*Copy the instruction data*/
     *newInst = *instruction;
 
-    // Add to the array
+    
+    /*Add to the array*/
     instrucs[*intrucsCounter] = newInst;
     (*intrucsCounter)++;
     return 1;
@@ -576,20 +587,20 @@ void setDataMWord(MachineWord **mw, int *wordsCount, int *err, Directive *dir)
 {
     if (!mw || !dir || wordsCount < 0)
     {
-       //TO DO  if (err) *err = 1;
+        handleError(ERR_NULL_POINTER, 0, "");
         return;
     }
 
     int i;
     if (dir->isData)
     {
-        // Process .data directive
+        /*Process .data directive*/
         for (i = 0; i < dir->len; i++)
         {
             (*mw)[*wordsCount + i].word = dir->nums[i] & 0xFFFFFF;  // Ensure only 24 bits are stored
         }
     } else {
-        // Process .string directive
+        /*Process .string directive*/
         for (i = 0; i < dir->len; i++)
         {
             (*mw)[*wordsCount + i].word = (uint8_t)dir->str[i]; // Each char becomes 24-bit word (lower 8 bits used)
@@ -597,7 +608,7 @@ void setDataMWord(MachineWord **mw, int *wordsCount, int *err, Directive *dir)
     }
 
     *wordsCount += dir->len;
-    if (err) *err = 0; // success
+    if (err) *err = 0; /*success*/
 }
 
 
