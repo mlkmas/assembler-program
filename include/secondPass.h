@@ -1,7 +1,7 @@
 #ifndef UNTITLED6_SECONDPASS_H
 #define UNTITLED6_SECONDPASS_H
 #include "../include/tables.h"
-
+#include <stddef.h>   
 
 /**
  * @brief Executes the second pass of the assembler

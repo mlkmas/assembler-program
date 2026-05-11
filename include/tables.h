@@ -1,6 +1,7 @@
 #ifndef UNTITLED6_TABLES_H
 #define UNTITLED6_TABLES_H
 #include "instructions.h"
+#include <stddef.h>
 
 typedef struct
 {

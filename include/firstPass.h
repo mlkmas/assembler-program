@@ -2,6 +2,7 @@
 #define UNTITLED6_FIRSTPASS_H
 
 #include "../include/tables.h"
+#include <stddef.h>   
 
 int firstPartExe(char *fileName);
 int inserExternEntry(extEntTable *table,int *count,char name[32],size_t *capacity,int line);
