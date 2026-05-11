@@ -37,16 +37,18 @@ int secondPartExec(char *file_name, Symbol *symbolTable , int IC, int DC, int sy
         entryWords=createEntWords(entries,entriesCounter,symbolTable,symbolCount);
 if(entryWords==NULL)
 {
-    
+    handleError(ERR_MEM_ALLOC,0,file_name); 
+    free(codeWords);
+    return 0;
 }
         /*ob file*/
         if(writeMWordsToHexObFile(file_name,codeWords,L,dataWords,DC)==0 )
         {
-            //error
+            handleError(ERR_WRITING_, 0,file_name);
         }
         if(entriesCounter!=0)
         {
-            //TO DO FILL ENTRY WORDS FIRST
+            /*TO DO FILL ENTRY WORDS FIRST*/
             printExtEntTable(entryWords,entriesCounter,".ent",file_name);
         }
         if(externsCounter!=0)
@@ -93,11 +95,14 @@ int checkSymbolTables(Symbol *symbolTable,extEntTable *externs,extEntTable *entr
     {
        if(searchSymbolInotherTables(&symbolTable[i],externs,externsCounter)==1 && symbolTable[i].isExternal==1)
        {
-           //error a defined extern
+           handleError(ERR_DUPLICATE_SYMBOL,symbolTable[i].lineNum,"");  /*defined extern */
+            *err = 1;
        }
         if(searchSymbolInotherTables(&symbolTable[i],entries,entriesCounter)==1 && symbolTable[i].isEntry==0)
         {
-            //error  undefined entry
+            handleError(ERR_INVALID_SYM_NAME,symbolTable[i].lineNum,"");  /*undefined entry */
+            *err = 1;
+
         }
 
     }
@@ -203,7 +208,7 @@ int insertExternWord(int *externsCount,size_t *externCap,MachineWord **externWor
     {
        if( resizeTable((void **)externWords,newSize,sizeof (MachineWord))==0)
        {
-           //err
+            handleError(ERR_MEM_ALLOC,0,"");
            return 0;
        }
     }
@@ -226,7 +231,8 @@ MachineWord* createCodeWords(Instruction *instrcs, int instrcsCount, int totalWo
     /* Allocate the codeWords array */
     MachineWord *codeWords = (MachineWord*)malloc(totalWords * sizeof(MachineWord));
     if (!codeWords)
-    {//err
+    {
+        handleError(ERR_MEM_ALLOC, 0,"");
         return NULL;  /* Allocation failed */
     }
 
@@ -249,7 +255,7 @@ int printExtEntTable(MachineWord *words,int len, char *extension,char *fileName)
     FILE *fp = fopen(newFileName, "w");
     if (!fp)
     {
-        //error
+        handleError(ERR_OPENING_FILE,0,fileName);
         return 0;
     }
     for (i = 0; i < len; i++)
@@ -265,6 +271,7 @@ MachineWord* createEntWords(extEntTable *ents, int totalWords,Symbol *symTable, 
     MachineWord *entWords = (MachineWord*)malloc(totalWords * sizeof(MachineWord));
     if (!entWords)
     {
+        handleError(ERR_MEM_ALLOC,0,"");
         return NULL;  /* Allocation failed */
     }
     for(i=0;i<totalWords;i++)

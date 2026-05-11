@@ -65,7 +65,6 @@ int handleMcro(char *fileName, Node **head)
     finalFile = fopen(outputFileName, "w");
     if (!finalFile)
     {
-
         fclose(fp);
         return 0;
     }
@@ -74,14 +73,17 @@ int handleMcro(char *fileName, Node **head)
         lineCounter++;
         token=strtok(str," \t\n");
 
-        //its a definition od a mcro
+        /*its a definition od a mcro*/
         if(token && strcmp(token,"mcro")==0)
         {
             mcroDef=1;
             mcroName= strtok(NULL," \t\n");
             if (strtok(NULL, " \t\n") != NULL)
             {
-                //error the line has extra letters
+                handleError(ERR_MACRO_SYNTAX, lineCounter, fileName); 
+   
+                fclose(fp);
+                fclose(finalFile);
                 return 0;
             }
             if(!validMcroName(mcroName,*head))
