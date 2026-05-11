@@ -37,7 +37,7 @@ int secondPartExec(char *file_name, Symbol *symbolTable , int IC, int DC, int sy
         entryWords=createEntWords(entries,entriesCounter,symbolTable,symbolCount);
 if(entryWords==NULL)
 {
-    //error
+    
 }
         /*ob file*/
         if(writeMWordsToHexObFile(file_name,codeWords,L,dataWords,DC)==0 )

@@ -27,7 +27,7 @@ int firstPartExe(char *fileName)
     fp= fopen(fileName,"r");
     if(fp==NULL)
     {
-        //throw error
+        handleError(ERR_OPENING_FILE,0,fileName);
         return -1;
     }
    while (fgets(line, MAX_LINE_LENGTH, fp) !=NULL)
@@ -85,7 +85,8 @@ int firstPartExe(char *fileName)
             {
                 if(inserExternEntry(entries,&entriesCounter,symbol.name,&entCap,lineNum)==0)
                 {
-                    //err
+                    handleError(ERR_MEM_ALLOC,lineNum,fileName);
+                    errFlag=1;
                 }
                 entriesCounter++;
                 break;
@@ -94,7 +95,8 @@ int firstPartExe(char *fileName)
             {
                 if(inserExternEntry(externs,&externsCounter,symbol.name,&exCap, lineNum)==0)
                 {
-                    //err
+                    handleError(ERR_MEM_ALLOC,lineNum,fileName);
+                    errFlag=1;
                 }
                 externsCounter++;
                 symbolFlag=0;
@@ -130,11 +132,16 @@ int firstPartExe(char *fileName)
     {
         setDataMWord(&dataMWs,&wordsCount,&err,&directives[i]);
     }
+    if(errFlag)
+    {
+    fclose(fp);
+    return 0;   /* don't proceed to second pass if first pass had errors */
+    }
 
     if( secondPartExec(fileName,symbolTable ,  IC,  DC,  symbolCount,  externsCounter, entriesCounter,
      dataMWs, externs, entries, err, instrucs,  intrucsCounter,  L)==0)
     {
-        //err
+        handleError(ERR_UNKNOWN,0,fileName);
         fclose(fp);
         return 0;
     }
@@ -151,7 +158,7 @@ int inserExternEntry(extEntTable *table,int *count,char name[32],size_t *capacit
     newSize=(*capacity)*2;
      if( resizeTable((void **)table,newSize,sizeof (extEntTable))==0)
       {
-      //err
+      handleError(ERR_MEM_ALLOC,line, "");
        return 0;
       }
 (*capacity)=newSize;
