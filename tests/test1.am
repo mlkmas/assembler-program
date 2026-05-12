@@ -1,4 +1,4 @@
-.entry LIST
+       .entry  LIST
        .extern val1
 MAIN:  mov     r3, LIST
 LOOP:  jmp     L1
@@ -8,7 +8,7 @@ LOOP:  jmp     L1
        cmp     K, #5
        bne     &END
 L1:    inc     K
-.entry LOOP
+       .entry  LOOP
        bne     LOOP
 END:   stop
 STR:   .string "abcdef"

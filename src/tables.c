@@ -545,7 +545,7 @@ int insertInstruction(Instruction *instruction,Instruction **instrucs,size_t *in
     }
     /**/
     (*instrucs)[*intrucsCounter] = *instruction;
-    (*intrucsCounter)++; 
+    
     return 1;
 }
 void buildFirstWord(Instruction *ins,int *err)
