@@ -96,11 +96,13 @@ int checkSymbolTables(Symbol *symbolTable,extEntTable *externs,extEntTable *entr
     int i;
     for(i=0;i<symbolCount;i++)
     {
+        /*
        if(searchSymbolInotherTables(&symbolTable[i],externs,externsCounter)==1 && symbolTable[i].isExternal==1)
        {
-           handleError(ERR_DUPLICATE_SYMBOL,symbolTable[i].lineNum,"");  /*defined extern */
+           handleError(ERR_DUPLICATE_SYMBOL,symbolTable[i].lineNum,"");  
             *err = 1;
        }
+       */
         if(searchSymbolInotherTables(&symbolTable[i],entries,entriesCounter)==1 && symbolTable[i].isEntry==0)
         {
             handleError(ERR_INVALID_SYM_NAME,symbolTable[i].lineNum,"");  /*undefined entry */

@@ -9,8 +9,8 @@
 
 int firstPartExe(char *fileName)
 {
-    int IC, DC, res, L,i, symbolCount = 0,dirCount=0,errFlag=0,err=-1,symbolFlag=-1,externsCounter=0,intrucsCounter=0,
-    wordsCount=0,entriesCounter=0,lineNum=0,totalCodeWords=0;
+    int IC, DC, res,i, symbolCount = 0,k,dirCount=0,errFlag=0,err=-1,symbolFlag=-1,externsCounter=0,intrucsCounter=0,
+    wordsCount=0,entriesCounter=0,lineNum=0,totalCodeWords=0,e,s;
     size_t symTableCap=10, dirCapacity=10,instCapactiy=10,entCap=10,exCap=10;
     extEntTable *externs,*entries; /* TO DO: ADD THE EXTERN TABLE EVERYWHERE  */
     externs=malloc(exCap * sizeof(extEntTable));
@@ -96,7 +96,16 @@ int firstPartExe(char *fileName)
                         handleError(ERR_MEM_ALLOC, lineNum, fileName);
                         errFlag=1;
                      }
-    }
+
+                     for (k=0; k<symbolCount; k++)
+                     {
+                     if (strcmp(symbolTable[k].name, entryName)==0)
+                       {
+                         symbolTable[k].isEntry= 1;
+                          break;
+                       }
+                    } 
+               }
     break;
             }
             case 3:
@@ -145,9 +154,21 @@ int firstPartExe(char *fileName)
             symbolFlag=0;
         }
         insertInstruction(&instruction,&instrucs,&instCapactiy,&intrucsCounter);
-        IC+=L;
+        IC+= instruction.wordCount;
     }
 }
+for (e=0; e<entriesCounter; e++)
+    {
+        for (s=0;s< symbolCount; s++)
+        {
+            if (strcmp(symbolTable[s].name, entries[e].name)==0)
+            {
+                symbolTable[s].isEntry=1;
+                break;
+            }
+        }
+    }
+
     updateDataSymbols(symbolTable, symbolCount, IC);
     dataMWs= malloc(DC * sizeof(MachineWord));
     /*set data mwords*/
