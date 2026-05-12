@@ -70,8 +70,10 @@ int handleMcro(char *fileName, Node **head)
     }
     while (fgets(str,MAX_LINE_LENGTH,fp))
     {
+        char originalLine[MAX_LINE_LENGTH];
         str[strcspn(str, "\r\n")] = '\0';
         lineCounter++;
+        strcpy(originalLine, str); 
         token=strtok(str," \t\n");
 
         /*its a definition od a mcro*/
@@ -172,17 +174,17 @@ int handleMcro(char *fileName, Node **head)
                     }
 
                     /*Write the label line to the output file*/
-                    fprintf(finalFile, "%s:\n", token); /*Add the colon back for output*/
+                    fprintf(finalFile, "%s\n", originalLine); /*Add the colon back for output*/
                 } else {
                     /*Check if it's a macro call */
                     Node *mcro = searchMcro(*head, token);
                     if (mcro)
                      {
                         /*It's a macro call*/
-                        fprintf(finalFile, "%s", mcro->value);
+                        fprintf(finalFile, "%s\n", mcro->value);
                     } else {
                         /*It's a regular line, copy it as-is */
-                        fprintf(finalFile, "%s", str);
+                       fprintf(finalFile, "%s\n", originalLine);
                     }
                 }
             }
