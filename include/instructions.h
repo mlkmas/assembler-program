@@ -27,8 +27,9 @@ typedef struct
 typedef struct {
      char name[6]; /*instruction name ex: add sub ...*/
     int opcode;
+     int funct;
     int numOperands; /*1-2*/
-    int funct;
+   
 
 } InstrucOp;
 
