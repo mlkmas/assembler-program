@@ -633,6 +633,7 @@ void buildExtraWords(Instruction *ins)
     int i;
 
     /*both operands are registers that share one word */
+    /*
     if(ins->numOperand ==2&& ins->mode[0]== MODE_REGISTER && ins->mode[1] ==MODE_REGISTER)
     {
         ins->words[1].word=(1 << ins->reg[0])|(1 << ins->reg[1]);
@@ -640,7 +641,7 @@ void buildExtraWords(Instruction *ins)
         ins->words[1].are= 'A';
         ins->wordCount=2;
         return;
-    }
+    } */
 
     for(i=0;i<ins->numOperand;i++)
     {

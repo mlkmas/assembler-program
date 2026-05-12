@@ -8,18 +8,12 @@ int secondPartExec(char *file_name, Symbol *symbolTable , int IC, int DC, int sy
                    MachineWord *dataWords, extEntTable *externs, extEntTable *entries, int err, Instruction *instrcs, int instrcsCount, int L)
     {
     
-    MachineWord *externsWords=NULL, *codeWords =NULL, *entryWords=NULL;  
-    int exWordsCounter;
-    size_t exWordsCap;
+     MachineWord *externsWords=NULL, *codeWords =NULL, *entryWords=NULL;  
+     int exWordsCounter;
+     size_t exWordsCap;
         exWordsCap=10,exWordsCounter=0;
 
-        /* Create machine code words from instructions */
-        codeWords= createCodeWords(instrcs,instrcsCount,L);
-        if (!codeWords)
-        {
-            handleError(ERR_MEM_ALLOC,0,"");
-            return 0;
-        }
+       
 
         /*checks defined externs / undefined entries
          * seperate functions*/
@@ -33,6 +27,13 @@ int secondPartExec(char *file_name, Symbol *symbolTable , int IC, int DC, int sy
         if(setInstLabelsMw(symbolTable,symbolCount,&err,instrcs,instrcsCount,&externsWords,&externsCounter,&exWordsCap)==0)/* TO DO  */
         {
             free(codeWords);
+            return 0;
+        }
+         /* Create machine code words from instructions */
+        codeWords= createCodeWords(instrcs,instrcsCount,L);
+        if (!codeWords)
+        {
+            handleError(ERR_MEM_ALLOC,0,"");
             return 0;
         }
         entryWords=createEntWords(entries,entriesCounter,symbolTable,symbolCount);
