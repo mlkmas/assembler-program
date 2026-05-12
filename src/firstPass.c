@@ -147,6 +147,7 @@ int firstPartExe(char *fileName)
         fclose(fp);
         return 0;
     }
+     fprintf(stderr, "  DEBUG firstPartExe: about to return 1\n");
     return 1;
 }
 

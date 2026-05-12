@@ -133,12 +133,15 @@ void processDataOrStr(int res,Directive *directiveInst,char *line,int *err)
     char *dataPart;
 
     strncpy(lineCopy, line, sizeof(lineCopy));
-    lineCopy[sizeof(lineCopy) - 1] = '\0';
+    lineCopy[sizeof(lineCopy)-1] = '\0';
+    fprintf(stderr, "  DEBUG processDataOrStr: res=%d line='%s'\n", res, lineCopy);
     if(res==1)/*its .data handle nums*/
     {
-        dataPart=strstr(lineCopy,".data");/* find .data in the line */
+        dataPart=strstr(lineCopy,".data");
+        fprintf(stderr, "  DEBUG processDataOrStr: dataPart before skip='%s'\n", dataPart ? dataPart : "NULL"); /* find .data in the line */
         if (dataPart) {dataPart += strlen(".data");} /* skip past it */
         else {dataPart = lineCopy; }
+         fprintf(stderr, "  DEBUG processDataOrStr: dataPart after skip='%s'\n", dataPart);  
         if(extractNums(lineCopy,directiveInst,err)==0)
         {
             /*handleError(ERR_INVALID_DATA_FORMAT,0,"");*/
@@ -166,21 +169,26 @@ int extractNums(char *lineCopy, Directive *dir,int *err)
 {
     char line[256];
     strncpy(line, lineCopy, sizeof(line));
+    line[sizeof(line)-1]='\0';
+     fprintf(stderr, "  DEBUG extractNums input: '%s'\n", line);
     int c,i,numIndex,sign,currNum,flag; /* the flag is 0 in case it shouldnt be a ,  */
     numIndex = 0;
      sign = 1;
      flag=0;
     c= countNums(line);
+    fprintf(stderr, "  DEBUG extractNums countNums returned: %d\n", c); 
     dir->len=c;
     if(c==0)
     {
-        dir->nums= NULL;
+         dir->nums= NULL;
+         fprintf(stderr, "  DEBUG extractNums FAIL D1: empty data line\n");
         handleError(ERR_INVALID_DATA_FORMAT,0,"");
         return 0;
     }
     dir->nums =(int *)malloc(c * sizeof(int));
     if (dir->nums == NULL)
     {
+        fprintf(stderr, "  DEBUG extractNums FAIL D2: malloc failed\n");
         handleError(ERR_MEM_ALLOC,0,"");
         return 0;
     }
@@ -218,6 +226,7 @@ int extractNums(char *lineCopy, Directive *dir,int *err)
                 {
                 i++;
                 } else{
+                    fprintf(stderr, "  DEBUG extractNums FAIL D3: bad char '%c' at pos %d in '%s', flag=%d\n", line[i], i, line, flag);
                 handleError(ERR_INVALID_DATA_FORMAT, 0, "");
                 return 0;
             }
@@ -571,7 +580,7 @@ void buildLabelMW(Instruction *ins,int add,int i)
 }
 void setDataMWord(MachineWord **mw, int *wordsCount, int *err, Directive *dir)
 {
-    if (!mw || !dir || wordsCount < 0)
+    if (!mw || !dir ||  !wordsCount)
     {
         handleError(ERR_NULL_POINTER, 0, "");
         return;

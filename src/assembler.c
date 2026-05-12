@@ -47,6 +47,7 @@ int main(int argc, char *argv[])
            amFile=addFile(argv[i],AM_EXT);
            if(firstPartExe(amFile))
            {
+            fprintf(stderr, "  DEBUG main: firstPartExe succeeded\n");
                /* TO DO: IF SECOND PART SUCCEEDED GENERTAE OUT FILES  */
                /*
                if(secondPartExe(amFile))
@@ -57,9 +58,13 @@ int main(int argc, char *argv[])
 
            }
 
-           free(amFile);
+          fprintf(stderr, "  DEBUG main: about to free amFile\n");
+          free(amFile);
+          fprintf(stderr, "  DEBUG main: amFile freed, about to free asFile\n");
+          free(asFile);
+          fprintf(stderr, "  DEBUG main: asFile freed\n");
        }
-       free(asFile);
+       
 
    }
 
