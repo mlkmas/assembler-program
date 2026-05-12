@@ -336,7 +336,7 @@ int extractStr(char *lineCopy, Directive *dir,int *err)
         handleError(ERR_MEM_ALLOC, 0, "");
         return 0;
     }
-    strncpy(dir->str, line + start,strContentLen);
+    strncpy(dir->str, token + start,strContentLen);
     dir->str[strContentLen] = '\0'; /*Null-terminate the new string*/
     return 1;
 }
@@ -550,7 +550,8 @@ int insertInstruction(Instruction *instruction,Instruction **instrucs,size_t *in
     /**/
     (*instrucs)[*intrucsCounter] = *instruction;
     (*intrucsCounter)++; 
-    
+    printf(stderr, "  DBG insertInstr: count now=%d, wordCount=%d, words[0]=%03X\n",
+        *intrucsCounter, instruction->wordCount, instruction->words[0].word);
     return 1;
 }
 void buildFirstWord(Instruction *ins,int *err)

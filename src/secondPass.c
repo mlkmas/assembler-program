@@ -230,7 +230,7 @@ void buildExternMW(MachineWord **externWords,int add,int i)
 
 MachineWord* createCodeWords(Instruction *instrcs, int instrcsCount, int totalWords)
 {
-    int i, j;
+    int i, j,q;
     int wordIndex;
 
 
@@ -241,6 +241,16 @@ MachineWord* createCodeWords(Instruction *instrcs, int instrcsCount, int totalWo
         handleError(ERR_MEM_ALLOC, 0,"");
         return NULL;  /* Allocation failed */
     }
+    fprintf(stderr, "  DBG createCodeWords: instrcsCount=%d totalWords=%d\n", instrcsCount, totalWords);
+    {
+      
+      for(q=0; q<instrcsCount; q++) 
+      {
+        fprintf(stderr, "    inst[%d] wordCount=%d words[0]=%03X words[1]=%03X words[2]=%03X\n",q, instrcs[q].wordCount, 
+                instrcs[q].words[0].word, instrcs[q].words[1].word, instrcs[q].words[2].word);
+      }
+   }
+
 
     /* Copy words from each instruction */
     wordIndex=0;
