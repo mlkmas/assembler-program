@@ -337,16 +337,21 @@ int parseInstruction(char *line, Instruction *instruc, int IC, int *err, int sym
     strncpy(lineCopy, line, sizeof(lineCopy));
     lineCopy[sizeof(lineCopy) - 1] = '\0';
     token= strtok(lineCopy," \t\n");
+    fprintf(stderr, "  DEBUG parseInst: first token='%s' symbolFlag=%d\n", token ? token : "NULL", symbolFlag); 
 
     if(symbolFlag==1)/*that means the first word is a symbol, skip it*/
     {
         token= strtok(NULL," \t\n");
+        fprintf(stderr, "  DEBUG parseInst: after-symbol token='%s'\n", token ? token : "NULL");
     }
     /*token contains the instruction name*/
     if(token == NULL || getInstructionOp(&op, token) == 0)
     {
         /*it didnt find a suitable instruction,TO DO: handle error*/
-        handleError(ERR_INVALID_INSTRUCTION_NAME, 0, "");
+        /*handleError(ERR_INVALID_INSTRUCTION_NAME, 0, ""); TO DO REMOVE IT AFTER DEBUGGING*/
+       fprintf(stderr, "  D1 fail token=%s\n", token ? token : "NULL");
+    handleError(ERR_INVALID_INSTRUCTION_NAME, 0, "");
+    *err = 1;
         return 0;
     }
     
@@ -365,9 +370,10 @@ int parseInstruction(char *line, Instruction *instruc, int IC, int *err, int sym
         if(opCount>=instruc->numOperand)
         {
             /*error an additional op*/
-            handleError(ERR_INVALID_ARGUMENT, 0, "");
-            *err=1;
-            return 0;
+           fprintf(stderr, "  D2 fail extra op token=%s opCount=%d need=%d\n", token, opCount, instruc->numOperand);
+    handleError(ERR_INVALID_ARGUMENT, 0, "");
+    *err = 1;
+     return 0;
         }
 
         if(strcmp(token,",")==0)
@@ -424,6 +430,7 @@ int parseInstruction(char *line, Instruction *instruc, int IC, int *err, int sym
                     if (extractNum(&instruc->imm[opCount],token + 1) == 0)
                     {
                        /* *err = ERR_INVALID_IMMEDIATE; */
+                       fprintf(stderr, "  DEBUG parseInst: FAIL at <description>, token='%s', opCount=%d, comma=%d\n", token ? token : "NULL", opCount, comma);
                         return 0;
                     }
                     
@@ -463,13 +470,16 @@ int parseInstruction(char *line, Instruction *instruc, int IC, int *err, int sym
     if (opCount < instruc->numOperand)
     {
        /**err = ERR_TOO_FEW_OPERANDS;*/ 
-        return 0;
+       fprintf(stderr, "  D9 fail too few ops opCount=%d need=%d\n", opCount, instruc->numOperand);
+    return 0;
     }
     /*TO DO, IMPLEMENT addressingOps functions that checks if the addressing methodes are correct*/
     if (addressingOps(instruc) == 0)
     {
        /**err = ERR_ILLEGAL_ADDRESSING; */
-        return 0;
+       fprintf(stderr, "  D10 fail addressingOps opcode=%d mode[0]=%d mode[1]=%d\n", 
+            instruc->opcode, instruc->mode[0], instruc->mode[1]);
+    return 0;
     }
 
     return 1;
