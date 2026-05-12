@@ -162,6 +162,7 @@ int extractNums(char *lineCopy, Directive *dir,int *err)
     int c,i,numIndex,sign,currNum,flag; /* the flag is 0 in case it shouldnt be a ,  */
     numIndex = 0;
      sign = 1;
+     flag=0;
     c= countNums(line);
     dir->len=c;
     if(c==0)
