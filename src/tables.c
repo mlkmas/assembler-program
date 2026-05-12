@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <limits.h>  
+#include <stdio.h>
 #include "../include/tables.h"
 #include "../include/errors.h"
 void insertSymbol(Symbol **symbolTable, Symbol *symbol, int *symbolCount,size_t *symbolSize,int DC) /* ones digit is for entr, tens for ectern  */
@@ -129,14 +130,18 @@ void processDataOrStr(int res,Directive *directiveInst,char *line,int *err)
 {
 
     char lineCopy[MAX_LINE_LENGTH];
+    char *dataPart;
 
     strncpy(lineCopy, line, sizeof(lineCopy));
     lineCopy[sizeof(lineCopy) - 1] = '\0';
     if(res==1)/*its .data handle nums*/
     {
+        dataPart=strstr(lineCopy,".data");/* find .data in the line */
+        if (dataPart) {dataPart += strlen(".data");} /* skip past it */
+        else {dataPart = lineCopy; }
         if(extractNums(lineCopy,directiveInst,err)==0)
         {
-            handleError(ERR_INVALID_DATA_FORMAT,0,"");
+            /*handleError(ERR_INVALID_DATA_FORMAT,0,"");*/
         }
        directiveInst->str=NULL;
         directiveInst->isData=1;
@@ -145,6 +150,8 @@ void processDataOrStr(int res,Directive *directiveInst,char *line,int *err)
     {
         if(extractStr(lineCopy,directiveInst,err)==0)
         {
+            fprintf(stderr, "DEBUG: extractStr failed on input: '%s'\n", lineCopy);
+       
             /* error  */
             return;
         }
@@ -254,7 +261,7 @@ int extractStr(char *lineCopy, Directive *dir,int *err)
     if( strchr(token, ':') != NULL)
     {
         /*its a label name, skip*/
-        token = strtok(line, " ");
+        token = strtok(NULL, " ");
         if(strcmp(token, ".string") != 0)
         {
             handleError(ERR_INVALID_ARGUMENT,0, "");

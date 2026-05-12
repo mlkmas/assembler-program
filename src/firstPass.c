@@ -111,6 +111,7 @@ int firstPartExe(char *fileName)
     {
         if (parseInstruction(line, &instruction,IC,&errFlag,symbolFlag) == 0)
         {
+            fprintf(stderr, "DEBUG: parseInstruction failed on line %d: '%s'\n", lineNum, line);
             errFlag=1;
             continue;
         }
