@@ -550,7 +550,7 @@ int insertInstruction(Instruction *instruction,Instruction **instrucs,size_t *in
     /**/
     (*instrucs)[*intrucsCounter] = *instruction;
     (*intrucsCounter)++; 
-    printf(stderr, "  DBG insertInstr: count now=%d, wordCount=%d, words[0]=%03X\n",
+    fprintf(stderr, "  DBG insertInstr: count now=%d, wordCount=%d, words[0]=%03X\n",
         *intrucsCounter, instruction->wordCount, instruction->words[0].word);
     return 1;
 }

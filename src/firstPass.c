@@ -78,6 +78,7 @@ int firstPartExe(char *fileName)
                 insertDir(&directiveInst, &directives, &err, &dirCapacity, &dirCount);
                 if(symbolFlag==1)
                 {
+                    symbol.isData=1;
                     insertSymbol(&symbolTable,&symbol,&symbolCount,&symTableCap,DC);
                     symbolFlag=0;
                 }
