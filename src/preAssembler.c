@@ -22,7 +22,7 @@ void processFile(const char* inputFilename, const char* outputFilename)
         {
             continue;
         }
-        removeWhitespace(line);
+        /*removeWhitespace(line);*/
         fprintf(outputFile,"%s\n",line);
     }
     fclose(inputFile);

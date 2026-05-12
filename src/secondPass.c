@@ -215,13 +215,13 @@ int insertExternWord(int *externsCount,size_t *externCap,MachineWord **externWor
     }
     (*externsCount)++;
     buildExternMW(externWords,address,*externsCount);
-    strcpy(externWords[*externsCount]->name,name);
+    strcpy((*externWords)[*externsCount].name, name);
     (*externCap)=newSize;
     return 1;
 }
 void buildExternMW(MachineWord **externWords,int add,int i)
 {
-    externWords[i]->word= add& 0xFFFFFF;
+    (*externWords)[i].word = add & 0xFFFFFF;
 }
 
 MachineWord* createCodeWords(Instruction *instrcs, int instrcsCount, int totalWords)

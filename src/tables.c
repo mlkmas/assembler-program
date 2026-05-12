@@ -37,28 +37,8 @@ void insertDir(Directive *dInst,Directive **directives, int *err, size_t *dirCap
         }
         (*dirCapacity)=capacity;
     }
-    Directive *newDir = malloc(sizeof(Directive));
-    if (!newDir)
-    {
-        handleError(ERR_MEM_ALLOC,0,"");
-        return;
-    }
-    newDir->nums = dInst->nums;
-    newDir->len = dInst->len;
-    newDir->isData = dInst->isData;
-    if (dInst->str != NULL)
-    {
-        newDir->str = malloc(strlen(dInst->str) + 1);
-        if (!newDir->str) {
-            free(newDir);
-            handleError(ERR_MEM_ALLOC,0,"");
-            return;
-        }
-        strcpy(newDir->str, dInst->str);
-    } else {
-        newDir->str = NULL;
-    }
-    directives[*dirCount] = newDir;
+   
+    (*directives)[*dirCount] = *dInst;   /* copy struct by value */
     (*dirCount)++;
 }
 int validSymbol(Symbol *symbol, Symbol symbolTable[], int symbolCount)
@@ -536,21 +516,8 @@ int insertInstruction(Instruction *instruction,Instruction **instrucs,size_t *in
         }
         (*instCapactiy)=capacity;
     }
-    Instruction *newInst = malloc(sizeof(Instruction));
-    if (!newInst)
-    {
-        /*Handle memory allocation failure*/
-        handleError(ERR_MEM_ALLOC, 0, "");
-        return 0;
-    }
-
-    /*Copy the instruction data*/
-    *newInst = *instruction;
-
-    
-    /*Add to the array*/
-    instrucs[*intrucsCounter] = newInst;
-    (*intrucsCounter)++;
+    /**/
+    (*instrucs)[*intrucsCounter] = *instruction;
     return 1;
 }
 void buildFirstWord(Instruction *ins,int *err)
