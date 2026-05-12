@@ -240,6 +240,7 @@ int countNums(const char *line)
 
     int c =0;
     int i = 0;
+     
     while (line[i] != '\0')
     {
         /*Skip leading non-digit characters (including spaces, commas, '.')*/
@@ -265,6 +266,7 @@ int extractStr(char *lineCopy, Directive *dir,int *err)
     strncpy(line, lineCopy, sizeof(line));
     char *token;
     int start,i;
+    int strContentLen;
 
     token = strtok(line, " ");
     if( strchr(token, ':') != NULL)
@@ -314,8 +316,9 @@ int extractStr(char *lineCopy, Directive *dir,int *err)
          handleError(ERR_INVALID_ARGUMENT, 0, "");
         return 0;
     }
+    strContentLen=i-start;
     i++;
-    dir->len=i-start+1;
+    /*dir->len=i-start+1;*/
     for(; token[i] != '\0'; i++)
     {
         if(token[i]!=' ' && token[i]!='\t' && token[i]!='\n')
@@ -326,14 +329,15 @@ int extractStr(char *lineCopy, Directive *dir,int *err)
             return 0;
         }
     }
-    dir->str=(char*)malloc(sizeof(char) * (dir->len + 1));
+    dir->len = strContentLen + 1;
+    dir->str=(char*)malloc(strContentLen+1);
     if(dir->str ==NULL)
     {
         handleError(ERR_MEM_ALLOC, 0, "");
         return 0;
     }
-    strncpy(dir->str, line + start, dir->len);
-    dir->str[dir->len] = '\0'; /*Null-terminate the new string*/
+    strncpy(dir->str, line + start,strContentLen);
+    dir->str[strContentLen] = '\0'; /*Null-terminate the new string*/
     return 1;
 }
 
@@ -545,6 +549,7 @@ int insertInstruction(Instruction *instruction,Instruction **instrucs,size_t *in
     }
     /**/
     (*instrucs)[*intrucsCounter] = *instruction;
+    (*intrucsCounter)++; 
     
     return 1;
 }
