@@ -7,7 +7,8 @@
 int secondPartExec(char *file_name, Symbol *symbolTable , int IC, int DC, int symbolCount, int externsCounter,int entriesCounter,
                    MachineWord *dataWords, extEntTable *externs, extEntTable *entries, int err, Instruction *instrcs, int instrcsCount, int L)
     {
-    MachineWord *externsWords, *codeWords,*entryWords;
+    
+    MachineWord *externsWords=NULL, *codeWords =NULL, *entryWords=NULL;  
     int exWordsCounter;
     size_t exWordsCap;
         exWordsCap=10,exWordsCounter=0;
@@ -57,7 +58,8 @@ if(entryWords==NULL)
         }
 
         free(codeWords);
-        free(externsWords);
+        if (externsWords) free(externsWords);
+        if (entryWords) free(entryWords); 
         return !err;
     }
     int writeMWordsToHexObFile(const char *filename, MachineWord *codeWords, int codeLen,MachineWord *dataWords,int dataLen)

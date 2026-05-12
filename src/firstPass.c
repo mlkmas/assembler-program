@@ -10,7 +10,7 @@
 int firstPartExe(char *fileName)
 {
     int IC, DC, res, L,i, symbolCount = 0,dirCount=0,errFlag=0,err=-1,symbolFlag=-1,externsCounter=0,intrucsCounter=0,
-    wordsCount=0,entriesCounter=0,lineNum=0;
+    wordsCount=0,entriesCounter=0,lineNum=0,totalCodeWords=0;
     size_t symTableCap=10, dirCapacity=10,instCapactiy=10,entCap=10,exCap=10;
     extEntTable *externs,*entries; /* TO DO: ADD THE EXTERN TABLE EVERYWHERE  */
     externs=malloc(exCap * sizeof(extEntTable));
@@ -138,7 +138,7 @@ int firstPartExe(char *fileName)
         }
         buildFirstWord(&instruction,&errFlag);
         buildExtraWords(&instruction);
-        L =instruction.wordCount;
+        totalCodeWords+= instruction.wordCount;
         if(symbolFlag==1)
         {
             insertSymbol(&symbolTable,&symbol,&symbolCount,&symTableCap,IC);
@@ -162,7 +162,7 @@ int firstPartExe(char *fileName)
     }
 
     if( secondPartExec(fileName,symbolTable ,  IC,  DC,  symbolCount,  externsCounter, entriesCounter,
-     dataMWs, externs, entries, err, instrucs,  intrucsCounter,  L)==0)
+     dataMWs, externs, entries, err, instrucs,  intrucsCounter, totalCodeWords)==0)
     {
         handleError(ERR_UNKNOWN,0,fileName);
         fclose(fp);
