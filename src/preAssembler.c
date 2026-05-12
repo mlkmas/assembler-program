@@ -151,7 +151,7 @@ int handleMcro(char *fileName, Node **head)
                     fclose(finalFile);
                     return 0;
                 }
-                fprintf(finalFile, "%s %s\n", token, entryName);
+               fprintf(finalFile, "%s\n", originalLine);
             }
             /*is it a mcro call? */
             else if(token) {

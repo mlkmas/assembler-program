@@ -142,7 +142,7 @@ void processDataOrStr(int res,Directive *directiveInst,char *line,int *err)
         if (dataPart) {dataPart += strlen(".data");} /* skip past it */
         else {dataPart = lineCopy; }
          fprintf(stderr, "  DEBUG processDataOrStr: dataPart after skip='%s'\n", dataPart);  
-        if(extractNums(lineCopy,directiveInst,err)==0)
+        if(extractNums(dataPart,directiveInst,err)==0)
         {
             /*handleError(ERR_INVALID_DATA_FORMAT,0,"");*/
         }
@@ -535,7 +535,7 @@ int insertInstruction(Instruction *instruction,Instruction **instrucs,size_t *in
     {
         capacity = (capacity == 0) ? 1 : capacity * 2;
 
-        if (!resizeTable((void **) instrucs, capacity, sizeof(Instruction*)))
+        if (!resizeTable((void **) instrucs, capacity, sizeof(Instruction)))
         {
             
             handleError(ERR_MEM_ALLOC, 0, "");
@@ -545,6 +545,7 @@ int insertInstruction(Instruction *instruction,Instruction **instrucs,size_t *in
     }
     /**/
     (*instrucs)[*intrucsCounter] = *instruction;
+    (*intrucsCounter)++; 
     return 1;
 }
 void buildFirstWord(Instruction *ins,int *err)

@@ -21,6 +21,8 @@ int firstPartExe(char *fileName)
     Instruction *instrucs= malloc(instCapactiy * sizeof(Instruction));
     FILE *fp;
     char line[MAX_LINE_LENGTH], *str = NULL,*pos;
+    char *entryName;
+    char tmpLine[MAX_LINE_LENGTH];
     IC = 100;
     DC = 0;
     Instruction instruction;
@@ -84,25 +86,44 @@ int firstPartExe(char *fileName)
             }
             case 4:
             {
-                if(inserExternEntry(entries,&entriesCounter,symbol.name,&entCap,lineNum)==0)
+                strcpy(tmpLine, line);
+                strtok(tmpLine, " \t\n"); /* skip ".entry" */
+                entryName=strtok(NULL, " \t\n"); /* get the name */
+                if (entryName)
                 {
-                    handleError(ERR_MEM_ALLOC,lineNum,fileName);
-                    errFlag=1;
-                }
-                entriesCounter++;
-                break;
+                     if(inserExternEntry(entries, &entriesCounter, entryName, &entCap, lineNum)==0)
+                      {
+                        handleError(ERR_MEM_ALLOC, lineNum, fileName);
+                        errFlag=1;
+                     }
+    }
+    break;
             }
             case 3:
             {
-                if(inserExternEntry(externs,&externsCounter,symbol.name,&exCap, lineNum)==0)
+                char *externName;
+                char tmpLine[MAX_LINE_LENGTH];
+                strcpy(tmpLine, line);
+                strtok(tmpLine, " \t\n");/* skip ".extern" */
+                externName = strtok(NULL, " \t\n");
+                if (externName)
                 {
-                    handleError(ERR_MEM_ALLOC,lineNum,fileName);
-                    errFlag=1;
+                    if(inserExternEntry(externs, &externsCounter, externName, &exCap, lineNum)==0)
+                    {
+                        handleError(ERR_MEM_ALLOC,lineNum, fileName);
+                        errFlag=1;
+                    }
+                    strcpy(symbol.name,externName);
+                    symbol.isExternal= 1;
+                    symbol.isData= 0;
+                    symbol.value =0;
+                    symbol.isEntry =0;
+                    insertSymbol(&symbolTable, &symbol, &symbolCount, &symTableCap, 0);
                 }
-                externsCounter++;
-                symbolFlag=0;
-                break;
+                 symbolFlag=0;
+                  break;
             }
+
             default:
                 break;
         }
