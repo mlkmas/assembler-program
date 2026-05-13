@@ -53,8 +53,8 @@ if(entryWords==NULL)
             /*TO DO FILL ENTRY WORDS FIRST*/
             printExtEntTable(entryWords,entriesCounter,".ent",file_name);
         }
-        fprintf(stderr, "DEBUG ext: externsCounter=%d exWordsCounter=%d externsWords=%p\n",
-        externsCounter, exWordsCounter, (void*)externsWords);
+        /*fprintf(stderr, "DEBUG ext: externsCounter=%d exWordsCounter=%d externsWords=%p\n",
+        externsCounter, exWordsCounter, (void*)externsWords);*/
         if(externsCounter!=0)
         {
             printExtEntTable(externsWords,exWordsCounter,".ext",file_name);
@@ -134,8 +134,8 @@ int setInstLabelsMw(Symbol *symTable,int symCount,int *err,Instruction *instrucs
         wordSlot=1;
         for(j=0;j<instrucs[i].numOperand;j++)
         {
-            fprintf(stderr, "DEBUG inst[%d].operand[%d] mode=%d labelName='%s'\n",
-        i, j, instrucs[i].mode[j], instrucs[i].labelName[j]);
+           /* fprintf(stderr, "DEBUG inst[%d].operand[%d] mode=%d labelName='%s'\n",
+        i, j, instrucs[i].mode[j], instrucs[i].labelName[j]);*/
             if(instrucs[i].mode[j]==MODE_REGISTER)
             {
             
@@ -179,8 +179,8 @@ int setInstLabelsMw(Symbol *symTable,int symCount,int *err,Instruction *instrucs
             {
                 if(symTable[index].isExternal==1)
                 {
-                    fprintf(stderr, "DEBUG extern ref: %s at IC=%d slot=%d addr=%d\n",
-        symTable[index].name, instrucs[i].address, wordSlot, extraWordAddr);
+                    /*fprintf(stderr, "DEBUG extern ref: %s at IC=%d slot=%d addr=%d\n",
+        symTable[index].name, instrucs[i].address, wordSlot, extraWordAddr);*/
                     instrucs[i].words[wordSlot].word=0;
                     instrucs[i].words[wordSlot].are= 'E';
                     if(insertExternWord(externsCount, externCap, externWords, err,extraWordAddr, symTable[index].name) == 0)
