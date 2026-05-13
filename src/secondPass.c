@@ -245,14 +245,16 @@ MachineWord* createCodeWords(Instruction *instrcs, int instrcsCount, int totalWo
         return NULL;  /* Allocation failed */
     }
     
-    {
-      
+    
+      /*
+      {
       for(q=0; q<instrcsCount; q++) 
       {
         fprintf(stderr, "    inst[%d] wordCount=%d words[0]=%03X words[1]=%03X words[2]=%03X\n",q, instrcs[q].wordCount, 
                 instrcs[q].words[0].word, instrcs[q].words[1].word, instrcs[q].words[2].word);
       }
-   }
+      }*/
+   
 
 
     /* Copy words from each instruction */

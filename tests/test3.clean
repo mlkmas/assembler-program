@@ -1,0 +1,4 @@
+MAIN:   add     r1, r2
+        bogus_op r3
+        bne     nowhere
+END:    stop
