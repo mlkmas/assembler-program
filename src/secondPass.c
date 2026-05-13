@@ -79,7 +79,7 @@ if(entryWords==NULL)
         fprintf(fp, "%d %d\n", codeLen, dataLen);
         for (i = 0; i < codeLen; i++)
         {
-            fprintf(fp, "%04d %03X %c\n", 100 + i, codeWords[i].word & 0xFFF);
+            fprintf(fp, "%04d %03X %c\n", 100 + i, codeWords[i].word & 0xFFF,codeWords[i].are);
         }
 
         /* Data section (continues after code section) */
