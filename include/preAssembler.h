@@ -1,3 +1,15 @@
+/**
+ * @file preAssembler.h
+ * @brief a macro pre pass assembler recives the as file handles it to clean file
+ *  then makes the mcro blocks into .am file for the first pass
+ * @version 0.1
+ * @date 2026-05-13
+ * 
+ * @copyright Copyright (c) 2026
+ * 
+ */
+ 
+
 #ifndef UNTITLED6_PREASSEMBLER_H
 #define UNTITLED6_PREASSEMBLER_H
 

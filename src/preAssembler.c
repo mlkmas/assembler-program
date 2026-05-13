@@ -77,7 +77,7 @@ int handleMcro(char *fileName, Node **head)
         token=strtok(str," \t\n");
 
         /*its a definition od a mcro*/
-        if(token && strcmp(token,"mcro")==0)
+        if(token && strcmp(token, MACRO_START)==0)
         {
            
             mcroName= strtok(NULL," \t\n");
@@ -111,7 +111,7 @@ int handleMcro(char *fileName, Node **head)
                     str[strcspn(str, "\r\n")] = '\0';
                     lineCounter++;
                     token= strtok(str," \t\n");
-                    if(token && strcmp(token, "mcroend")==0)
+                    if(token && strcmp(token, MACRO_END)==0)
                     {
                         /*TO CHECK IF YHE MCROEND DOESNT HAVE A SEQUENSE LETTERS*/
                         if (strtok(NULL, " \t\n") != NULL)

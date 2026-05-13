@@ -16,7 +16,7 @@ typedef struct
 
 typedef struct
 {
-    char symbol[32]; /* in case its associated with a symbol /TO DO: DO I NEED IT? IF YES SHOULD CHNGE TO A SYMBOL PTR?  */
+    char symbol[MAX_LABEL_LENGTH+1]; /* in case its associated with a symbol /TO DO: DO I NEED IT? IF YES SHOULD CHNGE TO A SYMBOL PTR?  */
     int *nums;/* for .data  */
     char *str;/* for .string  */
     int len;

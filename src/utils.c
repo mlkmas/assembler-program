@@ -75,7 +75,7 @@ int isCommentLine(const char *line)
 {
     while (isspace(*line))
         line++;
-    return *line== ';';
+    return *line == COMMENT_SYMBOL;
 }
 int isEmptyLine(const char *line)
 {

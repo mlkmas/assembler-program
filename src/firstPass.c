@@ -6,12 +6,14 @@
 #include "../include/utils.h"
 #include "../include/tables.h"
 #include "../include/errors.h"
-
+/***
+ * First pass of the assembler that calculates IC, DC abd builds the first symbol table.
+ */
 int firstPartExe(char *fileName)
 {
     int IC, DC, res,i, symbolCount = 0,k,dirCount=0,errFlag=0,err=-1,symbolFlag=-1,externsCounter=0,intrucsCounter=0,
     wordsCount=0,entriesCounter=0,lineNum=0,totalCodeWords=0,e,s;
-    size_t symTableCap=10, dirCapacity=10,instCapactiy=10,entCap=10,exCap=10;
+    size_t symTableCap=INITIAL_TABLE_CAP, dirCapacity=INITIAL_TABLE_CAP,instCapactiy=INITIAL_TABLE_CAP,entCap=INITIAL_TABLE_CAP,exCap=INITIAL_TABLE_CAP;
     extEntTable *externs,*entries; /* TO DO: ADD THE EXTERN TABLE EVERYWHERE  */
     Symbol *symbolTable,symbol;
     MachineWord *dataMWs;
@@ -27,7 +29,7 @@ int firstPartExe(char *fileName)
     symbolTable = malloc(symTableCap * sizeof(Symbol));
     directives = malloc(dirCapacity * sizeof(Directive));
     instrucs= malloc(instCapactiy * sizeof(Instruction));
-    IC=100;
+    IC=INITIAL_IC;
     DC=0;
     
     fp= fopen(fileName,"r");
@@ -41,7 +43,7 @@ int firstPartExe(char *fileName)
     lineNum++;
     line[strcspn(line, "\r\n")] = '\0';
     /*fprintf(stderr, "DEBUG line %d: '%s'\n", lineNum, line);*/
-    if(strlen(line) > 80 && line[80] != '\n' && line[80] != '\0')
+    if(strlen(line) > MAX_LINE_LENGTH-1 && line[MAX_LINE_LENGTH-1] != '\n' && line[MAX_LINE_LENGTH-1] != '\0')
 {
     handleError(ERR_INVALID_ARGUMENT, lineNum, fileName);  /* or add ERR_LINE_TOO_LONG */
     errFlag = 1;
@@ -202,13 +204,13 @@ for (e=0; e<entriesCounter; e++)
 }
 
 
-int inserExternEntry(extEntTable *table,int *count,char name[32],size_t *capacity,int line)
+int inserExternEntry(extEntTable *table,int *count,char name[MAX_LABEL_LENGTH+1],size_t *capacity,int line)
 {
   size_t newSize;
 
  if(*count >=(int)*capacity)
   {
-    newSize=(*capacity)*2;
+    newSize=(*capacity)*GROWTH_FACTOR;
      if( resizeTable((void **)table,newSize,sizeof (extEntTable))==0)
       {
       handleError(ERR_MEM_ALLOC,line, "");

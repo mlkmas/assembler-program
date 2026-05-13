@@ -10,7 +10,7 @@ void insertSymbol(Symbol **symbolTable, Symbol *symbol, int *symbolCount,size_t 
     size_t capacity=(*symbolSize);
     if ((size_t)(*symbolCount) >= capacity)
     {
-        capacity*= 2;  /*Double capacity (common strategy)*/
+        capacity*= GROWTH_FACTOR;  /*Double capacity (common strategy)*/
 
         if (!resizeTable((void **)symbolTable, capacity, sizeof(Symbol)))
         {
@@ -30,7 +30,7 @@ void insertDir(Directive *dInst,Directive **directives, int *err, size_t *dirCap
     size_t capacity=(*dirCapacity);
     if ((size_t) dirCount >= capacity)
     {
-        capacity*= 2;
+        capacity*= GROWTH_FACTOR;
         if (!resizeTable((void **) directives, capacity, sizeof(Directive)))
         {
             handleError(ERR_MEM_ALLOC,0,"");
@@ -458,8 +458,8 @@ int parseInstruction(char *line, Instruction *instruc, int IC, int *err, int sym
                           instruc->mode[opCount]=MODE_RELATIVE;
                           instruc->reg[opCount]=-1;
                           /*TO DO CHECK LABEL NAME SIZE */
-                          strncpy(instruc->labelName[opCount], token + 1, 30);
-                          instruc->labelName[opCount][30] = '\0';
+                          strncpy(instruc->labelName[opCount], token + 1, MAX_LABEL_LENGTH-1);
+                          instruc->labelName[opCount][MAX_LABEL_LENGTH-1] = '\0';
                           instruc->wordCount++;
                       } 
                       else 
@@ -470,8 +470,8 @@ int parseInstruction(char *line, Instruction *instruc, int IC, int *err, int sym
                         /*its not a reg then its a label*/
                         instruc->mode[opCount]=MODE_DIRECT;
                         /*TO DO : CHECK THAT TOKEN IS <31 */
-                        strncpy(instruc->labelName[opCount], token, 30);
-                        instruc->labelName[opCount][30] = '\0';
+                        strncpy(instruc->labelName[opCount], token, MAX_LABEL_LENGTH-1);
+                        instruc->labelName[opCount][MAX_LABEL_LENGTH-1] = '\0';
                         instruc->wordCount++;
                     } else{ /*its a reg*/
                         instruc->mode[opCount]=MODE_REGISTER;
@@ -540,7 +540,7 @@ int insertInstruction(Instruction *instruction,Instruction **instrucs,size_t *in
     size_t capacity=(*instCapactiy);
     if ((size_t)(*intrucsCounter) >= capacity)
     {
-        capacity = (capacity == 0) ? 1 : capacity * 2;
+        capacity = (capacity == 0) ? 1 : capacity * GROWTH_FACTOR;
 
         if (!resizeTable((void **) instrucs, capacity, sizeof(Instruction)))
         {
@@ -573,13 +573,13 @@ void buildFirstWord(Instruction *ins,int *err)
     }
    
 /*TO DO MAKE SURE TO GIVE REG=0 IN CASE THERE WASNT AND NOT -1*/
-    word |= (ins->opcode & 0xF) << 8;     
-    word |= (ins->funct  & 0xF) << 4;    
-    word |= (srcMode     & 0x3) << 2;
-    word |= (destMode    & 0x3);
+    word |= (ins->opcode & OPCODE_MASK) << OPCODE_SHIFT;
+    word |= (ins->funct  & FUNCT_MASK)  << FUNCT_SHIFT;
+    word |= (srcMode     & MODE_MASK)   << SRC_MODE_SHIFT;
+    word |= (destMode    & MODE_MASK)   << DST_MODE_SHIFT;
 
     
-    ins->words[0].word = word & 0xFFF; 
+    ins->words[0].word = word & WORD_MASK;
      ins->words[0].are= 'A';
 }
 void buildLabelMW(Instruction *ins,int add,int i)
@@ -640,7 +640,7 @@ void buildExtraWords(Instruction *ins)
     if(ins->numOperand ==2&& ins->mode[0]== MODE_REGISTER && ins->mode[1] ==MODE_REGISTER)
     {
         ins->words[1].word=(1 << ins->reg[0])|(1 << ins->reg[1]);
-        ins->words[1].word &= 0xFFF;
+        ins->words[1].word &= WORD_MASK;
         ins->words[1].are= 'A';
         ins->wordCount=2;
         return;
@@ -650,7 +650,7 @@ void buildExtraWords(Instruction *ins)
     {
         if(ins->mode[i]==MODE_IMMEDIATE)
         {
-            ins->words[wordIdx].word=ins->imm[i]& 0xFFF;
+            ins->words[wordIdx].word=ins->imm[i]& WORD_MASK;
             ins->words[wordIdx].are= 'A';
         }
         else if(ins->mode[i]==MODE_REGISTER)

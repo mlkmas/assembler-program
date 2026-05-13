@@ -7,6 +7,11 @@
  *
  * This file serves as the main header for the assembler program, including
  * the pre-assembler functionality needed for macro processing.
+ * @param argc  argument count
+ * @param argv  argument vector (input filenames, no extension)
+ * @return 0 on normal exit
  */
+int main(int argc, char *argv[]);
+ 
 
 #endif

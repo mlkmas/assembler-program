@@ -11,7 +11,7 @@ int secondPartExec(char *file_name, Symbol *symbolTable , int IC, int DC, int sy
      MachineWord *externsWords=NULL, *codeWords =NULL, *entryWords=NULL;  
      int exWordsCounter;
      size_t exWordsCap;
-        exWordsCap=10,exWordsCounter=0;
+        exWordsCap=INITIAL_TABLE_CAP,exWordsCounter=0;
 
        
 
@@ -81,13 +81,13 @@ if(entryWords==NULL)
         fprintf(fp, "%d %d\n", codeLen, dataLen);
         for (i = 0; i < codeLen; i++)
         {
-            fprintf(fp, "%04d %03X\n", 100 + i, codeWords[i].word & 0xFFF);
+            fprintf(fp, "%04d %03X\n", INITIAL_IC + i, codeWords[i].word & WORD_MASK);
         }
 
         /* Data section (continues after code section) */
         for (i= 0; i< dataLen; i++)
         {
-            fprintf(fp, "%04d %03X\n", 100 + codeLen + i, dataWords[i].word & 0xFFF);
+            fprintf(fp, "%04d %03X\n", INITIAL_IC + codeLen + i, dataWords[i].word & WORD_MASK);
         }
 
         fclose(fp);
@@ -172,7 +172,7 @@ int setInstLabelsMw(Symbol *symTable,int symCount,int *err,Instruction *instrucs
                 /*dist=symTable[index].value-instrucs[i].address;*/
                 dist=symTable[index].value-extraWordAddr;
                  
-                instrucs[i].words[wordSlot].word= dist& 0xFFF;
+                instrucs[i].words[wordSlot].word= dist& WORD_MASK;
                 instrucs[i].words[wordSlot].are='A';
             }
             else  
@@ -190,7 +190,7 @@ int setInstLabelsMw(Symbol *symTable,int symCount,int *err,Instruction *instrucs
                 }
                 else
                 {
-                    instrucs[i].words[wordSlot].word= symTable[index].value & 0xFFF;
+                    instrucs[i].words[wordSlot].word= symTable[index].value & WORD_MASK;
                     instrucs[i].words[wordSlot].are='R';
                 }
             }
@@ -214,7 +214,7 @@ int searchSymByName(Symbol *symTable,int symCount,char *name)
 }
 return -1;
 }
-int insertExternWord(int *externsCount,size_t *externCap,MachineWord **externWords,int *err,int address,char name[32])
+int insertExternWord(int *externsCount,size_t *externCap,MachineWord **externWords,int *err,int address,char name[MAX_LABEL_LENGTH+1])
 {
     size_t newSize;
     if(*externWords ==NULL)
@@ -229,7 +229,7 @@ int insertExternWord(int *externsCount,size_t *externCap,MachineWord **externWor
     
     else if((size_t)(*externsCount)>= *externCap)
     {
-        newSize=(*externCap) *2;
+        newSize=(*externCap) *GROWTH_FACTOR;
         if(resizeTable((void **)externWords, newSize, sizeof(MachineWord))==0)
         {
             handleError(ERR_MEM_ALLOC, 0, "");

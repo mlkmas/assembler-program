@@ -3,7 +3,7 @@
 
 
 /* File and string handling constants */
-#define MAX_LINE_LENGTH 82        /* Max line length including null terminator */
+#define MAX_LINE_LENGTH 81       /* Max line length including null terminator */
 #define MAX_LABEL_LENGTH 31         /* Max length for symbols/labels */
 #define MAX_VALUE_LEN 1000        /* Max length for macro values */
 #define MAX_FILE_NAME 256         /* Max filename length */
@@ -18,7 +18,7 @@
 #define OBJ_EXT ".ob"           /* Object file extension */
 #define ENT_EXT ".ent"          /* Entries file extension */
 #define EXT_EXT ".ext"          /* Externals file extension */
-#define AM_EXT ".am"         /* Macro-expanded file extension */
+#define AM_EXT ".am"       /* Macro-expanded file extension */
 
 /* Assembly process constants */
 #define INITIAL_IC 100          /* Starting address for instructions */
@@ -32,12 +32,29 @@
 
 #define MAX_WORDS_PER_INSTRUCTION 3
 
+/* Number of instructions and directives */
+#define NUM_INSTRUCTIONS   16
+#define NUM_DIRECTIVES      4
+ 
+/* Capacity growth */
+#define INITIAL_TABLE_CAP   10
+#define GROWTH_FACTOR       2
 
+/* Bit layout of the first instruction word */
+#define OPCODE_SHIFT        8
+#define FUNCT_SHIFT         4
+#define SRC_MODE_SHIFT      2
+#define DST_MODE_SHIFT      0
+#define OPCODE_MASK        0xF
+#define FUNCT_MASK         0xF
+#define MODE_MASK          0x3
+#define WORD_MASK          0xFFF    /* mask for 12-bit values */
+ 
 /* */
 typedef struct
 {
     int word;
-    char name[32];/* for extern/intry words in out files */
+    char name[MAX_LABEL_LENGTH+1];/* for extern/intry words in out files */
     char are; /*'A', 'R', or 'E' for the output file*/
 } MachineWord;
 
@@ -55,7 +72,7 @@ typedef struct {
      int mode[2];
      int reg[2];
      int imm[2];
-     char labelName[2][32];/*label name in ces mode is 1or2*/
+     char labelName[2][MAX_LABEL_LENGTH+1];/*label name in ces mode is 1or2*/
      MachineWord words[MAX_WORDS_PER_INSTRUCTION];
 } Instruction;
 
