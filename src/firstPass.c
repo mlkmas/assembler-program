@@ -142,7 +142,7 @@ int firstPartExe(char *fileName)
     {
         if (parseInstruction(line, &instruction,IC,&errFlag,symbolFlag) == 0)
         {
-            fprintf(stderr, "DEBUG: parseInstruction failed on line %d: '%s'\n", lineNum, line);
+            
             errFlag=1;
             continue;
         }
@@ -190,7 +190,7 @@ for (e=0; e<entriesCounter; e++)
         fclose(fp);
         return 0;
     }
-     fprintf(stderr, "  DEBUG firstPartExe: about to return 1\n");
+     
     return 1;
 }
 

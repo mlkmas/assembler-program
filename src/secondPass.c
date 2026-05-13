@@ -79,13 +79,13 @@ if(entryWords==NULL)
         fprintf(fp, "%d %d\n", codeLen, dataLen);
         for (i = 0; i < codeLen; i++)
         {
-            fprintf(fp, "%04d %03X %c\n", 100 + i, codeWords[i].word & 0xFFF,codeWords[i].are);
+            fprintf(fp, "%04d %03X\n", 100 + i, codeWords[i].word & 0xFFF);
         }
 
         /* Data section (continues after code section) */
         for (i= 0; i< dataLen; i++)
         {
-            fprintf(fp, "%04d %03X A\n", 100 + codeLen + i, dataWords[i].word & 0xFFF);
+            fprintf(fp, "%04d %03X\n", 100 + codeLen + i, dataWords[i].word & 0xFFF);
         }
 
         fclose(fp);
@@ -244,7 +244,7 @@ MachineWord* createCodeWords(Instruction *instrcs, int instrcsCount, int totalWo
         handleError(ERR_MEM_ALLOC, 0,"");
         return NULL;  /* Allocation failed */
     }
-    fprintf(stderr, "  DBG createCodeWords: instrcsCount=%d totalWords=%d\n", instrcsCount, totalWords);
+    
     {
       
       for(q=0; q<instrcsCount; q++) 

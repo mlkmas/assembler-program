@@ -134,14 +134,14 @@ void processDataOrStr(int res,Directive *directiveInst,char *line,int *err)
 
     strncpy(lineCopy, line, sizeof(lineCopy));
     lineCopy[sizeof(lineCopy)-1] = '\0';
-    fprintf(stderr, "  DEBUG processDataOrStr: res=%d line='%s'\n", res, lineCopy);
+    
     if(res==1)/*its .data handle nums*/
     {
         dataPart=strstr(lineCopy,".data");
-        fprintf(stderr, "  DEBUG processDataOrStr: dataPart before skip='%s'\n", dataPart ? dataPart : "NULL"); /* find .data in the line */
+       
         if (dataPart) {dataPart += strlen(".data");} /* skip past it */
         else {dataPart = lineCopy; }
-         fprintf(stderr, "  DEBUG processDataOrStr: dataPart after skip='%s'\n", dataPart);  
+         
         if(extractNums(dataPart,directiveInst,err)==0)
         {
             /*handleError(ERR_INVALID_DATA_FORMAT,0,"");*/
@@ -153,7 +153,7 @@ void processDataOrStr(int res,Directive *directiveInst,char *line,int *err)
     {
         if(extractStr(lineCopy,directiveInst,err)==0)
         {
-            fprintf(stderr, "DEBUG: extractStr failed on input: '%s'\n", lineCopy);
+           
        
             /* error  */
             return;
@@ -170,25 +170,25 @@ int extractNums(char *lineCopy, Directive *dir,int *err)
     char line[256];
     strncpy(line, lineCopy, sizeof(line));
     line[sizeof(line)-1]='\0';
-     fprintf(stderr, "  DEBUG extractNums input: '%s'\n", line);
+     
     int c,i,numIndex,sign,currNum,flag; /* the flag is 0 in case it shouldnt be a ,  */
     numIndex = 0;
      sign = 1;
      flag=0;
     c= countNums(line);
-    fprintf(stderr, "  DEBUG extractNums countNums returned: %d\n", c); 
+   
     dir->len=c;
     if(c==0)
     {
          dir->nums= NULL;
-         fprintf(stderr, "  DEBUG extractNums FAIL D1: empty data line\n");
+         
         handleError(ERR_INVALID_DATA_FORMAT,0,"");
         return 0;
     }
     dir->nums =(int *)malloc(c * sizeof(int));
     if (dir->nums == NULL)
     {
-        fprintf(stderr, "  DEBUG extractNums FAIL D2: malloc failed\n");
+       
         handleError(ERR_MEM_ALLOC,0,"");
         return 0;
     }
@@ -226,7 +226,7 @@ int extractNums(char *lineCopy, Directive *dir,int *err)
                 {
                 i++;
                 } else{
-                    fprintf(stderr, "  DEBUG extractNums FAIL D3: bad char '%c' at pos %d in '%s', flag=%d\n", line[i], i, line, flag);
+                   
                 handleError(ERR_INVALID_DATA_FORMAT, 0, "");
                 return 0;
             }
@@ -350,19 +350,19 @@ int parseInstruction(char *line, Instruction *instruc, int IC, int *err, int sym
     strncpy(lineCopy, line, sizeof(lineCopy));
     lineCopy[sizeof(lineCopy) - 1] = '\0';
     token= strtok(lineCopy," \t\n");
-    fprintf(stderr, "  DEBUG parseInst: first token='%s' symbolFlag=%d\n", token ? token : "NULL", symbolFlag); 
+    
 
     if(symbolFlag==1)/*that means the first word is a symbol, skip it*/
     {
         token= strtok(NULL," \t\n");
-        fprintf(stderr, "  DEBUG parseInst: after-symbol token='%s'\n", token ? token : "NULL");
+        
     }
     /*token contains the instruction name*/
     if(token == NULL || getInstructionOp(&op, token) == 0)
     {
         /*it didnt find a suitable instruction,TO DO: handle error*/
         /*handleError(ERR_INVALID_INSTRUCTION_NAME, 0, ""); TO DO REMOVE IT AFTER DEBUGGING*/
-       fprintf(stderr, "  D1 fail token=%s\n", token ? token : "NULL");
+       
     handleError(ERR_INVALID_INSTRUCTION_NAME, 0, "");
     *err = 1;
         return 0;
@@ -383,7 +383,7 @@ int parseInstruction(char *line, Instruction *instruc, int IC, int *err, int sym
         if(opCount>=instruc->numOperand)
         {
             /*error an additional op*/
-           fprintf(stderr, "  D2 fail extra op token=%s opCount=%d need=%d\n", token, opCount, instruc->numOperand);
+          
     handleError(ERR_INVALID_ARGUMENT, 0, "");
     *err = 1;
      return 0;
@@ -443,7 +443,7 @@ int parseInstruction(char *line, Instruction *instruc, int IC, int *err, int sym
                     if (extractNum(&instruc->imm[opCount],token + 1) == 0)
                     {
                        /* *err = ERR_INVALID_IMMEDIATE; */
-                       fprintf(stderr, "  DEBUG parseInst: FAIL at <description>, token='%s', opCount=%d, comma=%d\n", token ? token : "NULL", opCount, comma);
+                       
                         return 0;
                     }
                     
@@ -483,15 +483,15 @@ int parseInstruction(char *line, Instruction *instruc, int IC, int *err, int sym
     if (opCount < instruc->numOperand)
     {
        /**err = ERR_TOO_FEW_OPERANDS;*/ 
-       fprintf(stderr, "  D9 fail too few ops opCount=%d need=%d\n", opCount, instruc->numOperand);
+      
     return 0;
     }
     /*TO DO, IMPLEMENT addressingOps functions that checks if the addressing methodes are correct*/
     if (addressingOps(instruc) == 0)
     {
        /**err = ERR_ILLEGAL_ADDRESSING; */
-       fprintf(stderr, "  D10 fail addressingOps opcode=%d mode[0]=%d mode[1]=%d\n", 
-            instruc->opcode, instruc->mode[0], instruc->mode[1]);
+       
+            
     return 0;
     }
 
@@ -550,8 +550,7 @@ int insertInstruction(Instruction *instruction,Instruction **instrucs,size_t *in
     /**/
     (*instrucs)[*intrucsCounter] = *instruction;
     (*intrucsCounter)++; 
-    fprintf(stderr, "  DBG insertInstr: count now=%d, wordCount=%d, words[0]=%03X\n",
-        *intrucsCounter, instruction->wordCount, instruction->words[0].word);
+
     return 1;
 }
 void buildFirstWord(Instruction *ins,int *err)
@@ -633,7 +632,7 @@ void buildExtraWords(Instruction *ins)
     int i;
 
     /*both operands are registers that share one word */
-    /*
+    
     if(ins->numOperand ==2&& ins->mode[0]== MODE_REGISTER && ins->mode[1] ==MODE_REGISTER)
     {
         ins->words[1].word=(1 << ins->reg[0])|(1 << ins->reg[1]);
@@ -641,7 +640,7 @@ void buildExtraWords(Instruction *ins)
         ins->words[1].are= 'A';
         ins->wordCount=2;
         return;
-    } */
+    } 
 
     for(i=0;i<ins->numOperand;i++)
     {
