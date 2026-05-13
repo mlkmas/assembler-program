@@ -36,6 +36,7 @@ int firstPartExe(char *fileName)
 {
     lineNum++;
     line[strcspn(line, "\r\n")] = '\0';
+    fprintf(stderr, "DEBUG line %d: '%s'\n", lineNum, line);
     if(strlen(line) > 80 && line[80] != '\n' && line[80] != '\0')
 {
     handleError(ERR_INVALID_ARGUMENT, lineNum, fileName);  /* or add ERR_LINE_TOO_LONG */
@@ -130,6 +131,8 @@ int firstPartExe(char *fileName)
                     symbol.isEntry =0;
                     insertSymbol(&symbolTable, &symbol, &symbolCount, &symTableCap, 0);
                 }
+                fprintf(stderr, "DEBUG case3: externName=%s externsCounter=%d symbolCount=%d\n",
+        externName ? externName : "NULL", externsCounter, symbolCount);
                  symbolFlag=0;
                   break;
             }
