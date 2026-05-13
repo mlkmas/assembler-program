@@ -10,7 +10,7 @@ void insertSymbol(Symbol **symbolTable, Symbol *symbol, int *symbolCount,size_t 
     size_t capacity=(*symbolSize);
     if ((size_t)(*symbolCount) >= capacity)
     {
-        capacity*= GROWTH_FACTOR;  /*Double capacity (common strategy)*/
+        capacity*= GROWTH_FACTOR;  
 
         if (!resizeTable((void **)symbolTable, capacity, sizeof(Symbol)))
         {
