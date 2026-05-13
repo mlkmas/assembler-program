@@ -29,6 +29,11 @@ int secondPartExec(char *file_name, Symbol *symbolTable , int IC, int DC, int sy
             free(codeWords);
             return 0;
         }
+        if(err == 1)
+        {
+            if (externsWords) {free(externsWords);}
+            return 0;
+        }
          /* Create machine code words from instructions */
         codeWords= createCodeWords(instrcs,instrcsCount,L);
         if (!codeWords)
@@ -162,6 +167,7 @@ int setInstLabelsMw(Symbol *symTable,int symCount,int *err,Instruction *instrucs
                 *err = 1;
                 /*TO DO CHECK IF HANDELING ERROR NEED INSTEAD OF PRINTING ERROR*/
                 fprintf(stderr,"Error: undefined label '%s'\n", instrucs[i].labelName[j]);
+                handleError(ERR_INVALID_SYM_NAME, 0, "");
                 wordSlot++;
                 continue;
             }

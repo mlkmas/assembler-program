@@ -195,7 +195,7 @@ for (e=0; e<entriesCounter; e++)
     if( secondPartExec(fileName,symbolTable ,  IC,  DC,  symbolCount,  externsCounter, entriesCounter,
      dataMWs, externs, entries, err, instrucs,  intrucsCounter, totalCodeWords)==0)
     {
-        handleError(ERR_UNKNOWN,0,fileName);
+       
         fclose(fp);
         return 0;
     }
