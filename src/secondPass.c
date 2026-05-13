@@ -211,19 +211,30 @@ return -1;
 int insertExternWord(int *externsCount,size_t *externCap,MachineWord **externWords,int *err,int address,char name[32])
 {
     size_t newSize;
-    newSize=(*externCap)*2;
-    if(*externsCount>=*externCap)
+    if(*externWords ==NULL)
     {
-       if( resizeTable((void **)externWords,newSize,sizeof (MachineWord))==0)
-       {
-            handleError(ERR_MEM_ALLOC,0,"");
-           return 0;
-       }
+        *externWords=(MachineWord*)malloc((*externCap) * sizeof(MachineWord));
+        if(*externWords ==NULL)
+        {
+            handleError(ERR_MEM_ALLOC, 0, "");
+            return 0;
+        }
     }
-    (*externsCount)++;
-    buildExternMW(externWords,address,*externsCount);
+    
+    else if((size_t)(*externsCount)>= *externCap)
+    {
+        newSize=(*externCap) *2;
+        if(resizeTable((void **)externWords, newSize, sizeof(MachineWord))==0)
+        {
+            handleError(ERR_MEM_ALLOC, 0, "");
+            return 0;
+        }
+        (*externCap)=newSize;
+    }
+    (*externWords)[*externsCount].word=address & 0xFFFFFF;
     strcpy((*externWords)[*externsCount].name, name);
-    (*externCap)=newSize;
+    (*externWords)[*externsCount].are='E';
+    (*externsCount)++;
     return 1;
 }
 void buildExternMW(MachineWord **externWords,int add,int i)
@@ -233,7 +244,7 @@ void buildExternMW(MachineWord **externWords,int add,int i)
 
 MachineWord* createCodeWords(Instruction *instrcs, int instrcsCount, int totalWords)
 {
-    int i, j,q;
+    int i, j;
     int wordIndex;
 
 
