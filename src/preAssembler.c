@@ -35,7 +35,7 @@ int preExec(char fileName[])
      char newFileName[MAX_FILE_NAME];
     generateOutputFilename(fileName,newFileName,".clean");
     processFile(fileName,newFileName);
-    if(newFileName ==NULL ||newFileName[0]=='\0')
+    if(newFileName[0]=='\0')
     {
         handleError(ERR_MEM_ALLOC,0,"");
         return 0;
@@ -49,12 +49,12 @@ int preExec(char fileName[])
 }
 int handleMcro(char *fileName, Node **head)
 {
-    int lineCounter,status,mcroDef;
+    int lineCounter,status;
     FILE *fp, *finalFile;
     char outputFileName[MAX_FILE_NAME];
     char str[MAX_LINE_LENGTH], *token, *mcroName, *macroBody;
-    fpos_t pos;
-    status=1,lineCounter=0,mcroDef=0;
+    
+    status=1,lineCounter=0;
     fp= fopen(fileName,"r");
     if(!fp)
     {
@@ -79,7 +79,7 @@ int handleMcro(char *fileName, Node **head)
         /*its a definition od a mcro*/
         if(token && strcmp(token,"mcro")==0)
         {
-            mcroDef=1;
+           
             mcroName= strtok(NULL," \t\n");
             if (strtok(NULL, " \t\n") != NULL)
             {
@@ -119,7 +119,7 @@ int handleMcro(char *fileName, Node **head)
                             handleError(ERR_MACRO_SYNTAX,lineCounter,fileName);
                             return 0;
                         }
-                        mcroDef=1;
+                       
                         if(!addMcro(head,mcroName,macroBody))
                         {
                             free(macroBody);
@@ -211,6 +211,7 @@ Node *searchMcro(Node *head, const char *name)
 int validMcroName(const char* name,Node *head)
 {
  int i;
+ Node *current;
     if (!name || !isalpha(name[0]))
     {
         return 0;
@@ -223,7 +224,7 @@ int validMcroName(const char* name,Node *head)
             return 0;
         }
     }
-Node *current=head;
+    current=head;
 
     while (current)
     {

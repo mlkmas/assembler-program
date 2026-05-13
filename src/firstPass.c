@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-
+#include "../include/utils.h"
 #include "../include/tables.h"
 #include "../include/errors.h"
 
