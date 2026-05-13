@@ -79,13 +79,13 @@ if(entryWords==NULL)
         fprintf(fp, "%d %d\n", codeLen, dataLen);
         for (i = 0; i < codeLen; i++)
         {
-            fprintf(fp, "%04d %03X\n", 100 + i, codeWords[i].word & 0xFFF);
+            fprintf(fp, "%04d %03X %c\n", 100 + i, codeWords[i].word & 0xFFF);
         }
 
         /* Data section (continues after code section) */
-        for (i = 0; i < dataLen; i++)
+        for (i= 0; i< dataLen; i++)
         {
-            fprintf(fp, "%04d %03X\n", 100 + codeLen + i, dataWords[i].word & 0xFFF);
+            fprintf(fp, "%04d %03X A\n", 100 + codeLen + i, dataWords[i].word & 0xFFF);
         }
 
         fclose(fp);
@@ -165,7 +165,9 @@ int setInstLabelsMw(Symbol *symTable,int symCount,int *err,Instruction *instrucs
 
             if(instrucs[i].mode[j]==MODE_RELATIVE)
             {
-                dist=symTable[index].value-instrucs[i].address;
+                /*dist=symTable[index].value-instrucs[i].address;*/
+                dist=symTable[index].value-extraWordAddr;
+                 
                 instrucs[i].words[wordSlot].word= dist& 0xFFF;
                 instrucs[i].words[wordSlot].are='A';
             }
