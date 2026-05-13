@@ -59,9 +59,10 @@ void removeWhitespace(char* line)
 
 void generateOutputFilename(const char* inputFilename, char outputFilename[MAX_FILE_NAME], const char* newExtension)
 {
+    char* lastDot;
 
     strcpy(outputFilename, inputFilename);
-    char* lastDot = strrchr(outputFilename, '.');
+    lastDot = strrchr(outputFilename, '.');
     if (lastDot != NULL)
     {
         strcpy(lastDot, newExtension);

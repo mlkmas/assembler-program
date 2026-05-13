@@ -40,9 +40,10 @@ static const InstrucOp instructions[] =
 static const char *directive[]={".data", ".string", ".extern", ".entry",NULL};
 int isInstruction(const char *name)
 {
+    int i;
     if(name ==NULL)
         return 0;
-    int i;
+    
     for(i=0;i<16;i++)
     {
         if(strcmp(name,instructions[i].name)==0)
@@ -54,9 +55,10 @@ int isInstruction(const char *name)
 
 int isReg(const char *name)
 {
+    int i;
     if(name ==NULL)
         return -1;
-    int i;
+    
     for(i=0;i<7;i++)
     {
         if(strcmp(name,regTable[i].name)==0)

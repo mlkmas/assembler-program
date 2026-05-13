@@ -13,19 +13,23 @@ int firstPartExe(char *fileName)
     wordsCount=0,entriesCounter=0,lineNum=0,totalCodeWords=0,e,s;
     size_t symTableCap=10, dirCapacity=10,instCapactiy=10,entCap=10,exCap=10;
     extEntTable *externs,*entries; /* TO DO: ADD THE EXTERN TABLE EVERYWHERE  */
-    externs=malloc(exCap * sizeof(extEntTable));
-    entries=malloc(entCap * sizeof(extEntTable));
-    Symbol *symbolTable= malloc(symTableCap * sizeof(Symbol)), symbol;
+    Symbol *symbolTable,symbol;
     MachineWord *dataMWs;
-    Directive *directives= malloc(dirCapacity * sizeof(Directive)),directiveInst;
-    Instruction *instrucs= malloc(instCapactiy * sizeof(Instruction));
+    Directive *directives, directiveInst;
+    Instruction *instrucs;
+    Instruction instruction;
     FILE *fp;
-    char line[MAX_LINE_LENGTH], *str = NULL,*pos;
+    char line[MAX_LINE_LENGTH], *pos; 
     char *entryName;
     char tmpLine[MAX_LINE_LENGTH];
-    IC = 100;
-    DC = 0;
-    Instruction instruction;
+    externs=malloc(exCap * sizeof(extEntTable));
+    entries=malloc(entCap * sizeof(extEntTable));
+    symbolTable = malloc(symTableCap * sizeof(Symbol));
+    directives = malloc(dirCapacity * sizeof(Directive));
+    instrucs= malloc(instCapactiy * sizeof(Instruction));
+    IC=100;
+    DC=0;
+    
     fp= fopen(fileName,"r");
     if(fp==NULL)
     {

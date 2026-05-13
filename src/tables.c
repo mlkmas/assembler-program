@@ -77,6 +77,7 @@ void extractSymbol(char *line, Symbol *symbol, int isData)
 {
     char lineCopy[MAX_LINE_LENGTH];
     char *token;
+    char *colonPos;
 
     strncpy(lineCopy, line, sizeof(lineCopy));
     lineCopy[sizeof(lineCopy) - 1] = '\0';
@@ -85,7 +86,7 @@ void extractSymbol(char *line, Symbol *symbol, int isData)
     symbol->isExternal = 0;
     symbol->isData = (isData == 1 || isData == 2) ? 1 : 0;
 
-    char *colonPos = strchr(lineCopy, ':');
+    colonPos = strchr(lineCopy, ':');
     if (colonPos)
     {
         /*Extract the first word (the symbol name)*/
@@ -168,10 +169,11 @@ void processDataOrStr(int res,Directive *directiveInst,char *line,int *err)
 int extractNums(char *lineCopy, Directive *dir,int *err)
 {
     char line[256];
-    strncpy(line, lineCopy, sizeof(line));
-    line[sizeof(line)-1]='\0';
+   
      
     int c,i,numIndex,sign,currNum,flag; /* the flag is 0 in case it shouldnt be a ,  */
+    strncpy(line, lineCopy, sizeof(line));
+    line[sizeof(line)-1]='\0';
     numIndex = 0;
      sign = 1;
      flag=0;
@@ -263,10 +265,11 @@ int countNums(const char *line)
 int extractStr(char *lineCopy, Directive *dir,int *err)
 {
     char line[256];
-    strncpy(line, lineCopy, sizeof(line));
+    
     char *token;
     int start,i;
     int strContentLen;
+    strncpy(line, lineCopy, sizeof(line));
 
     token = strtok(line, " ");
     if( strchr(token, ':') != NULL)
@@ -586,13 +589,14 @@ void buildLabelMW(Instruction *ins,int add,int i)
 }
 void setDataMWord(MachineWord **mw, int *wordsCount, int *err, Directive *dir)
 {
+    int i;
     if (!mw || !dir ||  !wordsCount)
     {
         handleError(ERR_NULL_POINTER, 0, "");
         return;
     }
 
-    int i;
+    
     if (dir->isData)
     {
         /*Process .data directive*/
